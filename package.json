@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://strand94.github.io/TBA4251/",
   "dependencies": {
+    "gh-pages": "^2.0.0",
     "leaflet": "^1.3.4",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",

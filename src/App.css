@@ -1,25 +1,16 @@
-body{
-  margin: 0px;
+#map {
   height: 100vh;
-}
-
-#root {
-  height: 100%;
   margin-right: 165px;
 }
 
-#side_content {
+#sidebar {
   height: 100%;
   width: 165px;
   position: fixed;
   z-index: 1;
   top: 0;
   right: 0;
-  background-color: #111;
+  background-color: #302e2e;
   overflow-x: hidden;
   padding-top: 20px;
-}
-
-.map { 
-  height: 100%;
 }

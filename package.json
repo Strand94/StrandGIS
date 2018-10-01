@@ -9,7 +9,8 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-leaflet": "^2.0.1",
-    "react-scripts": "1.1.5"
+    "react-scripts": "1.1.5",
+    "sortablejs": "^1.7.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,0 +1,33 @@
+#subtitle {
+    color:white;
+  }
+  
+#sortable_layers {
+    color: white;
+    list-style: none;
+    font-size: 10px;
+
+  }
+
+#sortable_layers li {
+    margin: 0 3px 3px 3px;
+    padding: 0.4em;
+    padding-left: 0.4em;
+    padding-left: 1.5em;
+    font-size: 1.4em;
+    height: 18px;
+    background-color: gray;
+    color: back;
+}
+
+#sortable li.selected {
+    background-color: #666;
+    color: white;
+}
+
+.active{
+    border: 1px solid #c5c5c5;
+    background: #f6f6f6;
+    font-weight: normal;
+    color: #454545;
+}

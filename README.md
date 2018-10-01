@@ -40,6 +40,7 @@ This website will be deplyoed at all time on [Strand94.Github.io/TBA4251](https:
 ## Built With
 
 * [React](https://reactjs.org/docs/getting-started.html) - The web framework used
+* [React-Leaflet](https://react-leaflet.js.org/) - Leaflet components for React
 
 
 ## Authors

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import L from 'leaflet'
 import {Map, TileLayer, Marker, Popup, GeoJSON} from 'react-leaflet';
-import './Map.css';
+import './MainMap.css';
 
 
 var myIcon = L.icon({
@@ -13,7 +13,7 @@ var myIcon = L.icon({
 
 
 
-class App extends Component {
+class MainMap extends Component {
   //Initial value for coordinated and zoom level
   state = {
     lat: 63.43,
@@ -26,22 +26,24 @@ class App extends Component {
     const position = [this.state.lat, this.state.lng]
 
     return (
-      <Map className="map" center={position} zoom={this.state.zoom}>
+      <Map ref='map' className="map" center={position} zoom={this.state.zoom}>
         <TileLayer
+          latLngBounds = {this.mybounds}
           attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          
         />
         <GeoJSON key="1" data={getGeoJsonTrondheim()} style={this.getStyle}>
           <Popup>
-            this is Trondheim
+            <h1>This is Trondheim</h1>
           </Popup>
         </GeoJSON>
-        <GeoJSON key="1" data={getGeoJsonTrondheim2()} style={this.getStyle}>
+        <GeoJSON key="2" data={getGeoJsonTrondheim2()} style={this.getStyle}>
           <Popup>
             this is Trondheim2
           </Popup>
         </GeoJSON>
-        <GeoJSON key="2" data={getGeoJsonLine()} style={this.getStyle}>
+        <GeoJSON key="3" data={getGeoJsonLine()} style={this.getStyle}>
           <Popup>
             This is line
           </Popup>
@@ -61,15 +63,16 @@ class App extends Component {
   }
 }
 
-export default App;
+export default MainMap;
 
 function getGeoJsonLine() {
-return {
-"type": "FeatureCollection",
-"features": [
-  {"type": "LineString", "coordinates": [[10.3715508,63.415876],[10.4391528,63.412507]]},
-]
-}
+  return {
+  "type": "FeatureCollection",
+  "style": "color:red",
+  "features": [
+    {"type": "LineString", "coordinates": [[10.3715508,63.415876],[10.4391528,63.412507]]},
+  ]
+      }
 }
 
 function getGeoJsonTrondheim() {

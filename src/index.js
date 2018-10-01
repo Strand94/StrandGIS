@@ -21,4 +21,4 @@ for (var i = 0; i < layer.length; i++) {
 }
 
 // Makes the sidebar layer list sortable
-var sortable = Sortable.create(layer_list)
+Sortable.create(layer_list)

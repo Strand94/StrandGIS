@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Map from "./Map/Map"
+import MainMap from "./Map/MainMap"
 import Sidebar from "./sidebar/Sidebar"
 import "./App.css"
 
@@ -8,10 +8,10 @@ class App extends Component {
         return ([
           <div id='page_content'>
             <div id='map'>
-              <Map key='map'/>
+              <MainMap key='mainmap_key'/>
             </div>
             <div id='sidebar'>
-              <Sidebar key='sidebar'/>
+              <Sidebar key='sidebar_key'/>
             </div>
           </div>
         ])

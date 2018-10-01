@@ -6,7 +6,7 @@ class Layers extends Component{
     render(){
         return(
         <div id="layers">
-            <p id="subtitle">Layers:</p>
+            <p id="subtitle">Layers</p>
             <div>
                 <ul id="sortable_layers" class="ui-sortable">
                     <li class="layer active">Trondheim</li>

@@ -8,9 +8,9 @@ class Layers extends Component{
             <p id="subtitle">Layers</p>
             <div>
                 <ul id="sortable_layers" className="ui-sortable">
-                    <li className="layer active">Trondheim</li>
-                    <li className="layer">Trondheim 2</li>
-                    <li className="layer">Line</li>
+                    <li className="T1 layer active">Trondheim</li>
+                    <li className="T2 layer">Trondheim 2</li>
+                    <li className="Line layer">Line</li>
                 </ul>
             </div>
         </div>

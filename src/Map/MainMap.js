@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import L from 'leaflet'
-import {Map, TileLayer, Marker, Popup, GeoJSON} from 'react-leaflet';
+import {Map, TileLayer, Marker, Popup, GeoJSON, LayerGroup, LayersControl, Pane} from 'react-leaflet';
 import './MainMap.css';
+import $ from "jquery";
 
 
 var myIcon = L.icon({
@@ -11,8 +12,6 @@ var myIcon = L.icon({
   popupAnchor: [0, -45],
 });
 
-
-
 class MainMap extends Component {
   //Initial value for coordinated and zoom level
   state = {
@@ -21,49 +20,65 @@ class MainMap extends Component {
     zoom: 13,
   }
 
+  getStyle = {
+    "color": "#ff7800",
+    "weight": 4,
+    "opacity": 0.65
+  };
+
+  getStyle2 = {
+    "color": "#00000",
+    "weight": 4,
+    "opacity": 0.65
+  };
+
   render() {
     //Set the map position and zoom level
     const position = [this.state.lat, this.state.lng]
 
     return (
-      <Map ref='map' className="map" center={position} zoom={this.state.zoom}>
+
+      <Map ref={Map => this.map = Map} className="map" center={position} zoom={this.state.zoom}>
         <TileLayer
           latLngBounds = {this.mybounds}
           attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          
-        />
-        <GeoJSON key="1" data={getGeoJsonTrondheim()} style={this.getStyle}>
-          <Popup>
-            <h1>This is Trondheim</h1>
-          </Popup>
-        </GeoJSON>
-        <GeoJSON key="2" data={getGeoJsonTrondheim2()} style={this.getStyle}>
-          <Popup>
-            this is Trondheim2
-          </Popup>
-        </GeoJSON>
-        <GeoJSON key="3" data={getGeoJsonLine()} style={this.getStyle}>
-          <Popup>
-            This is line
-          </Popup>
-        </GeoJSON>
-        <Marker 
-          position={position}
-          icon = {myIcon}
-        > 
-      
-          <Popup>
-              This is a popup.
-          </Popup>
-        </Marker>
-       
+        /><div>
+          <GeoJSON className="T1" key="1" data={getGeoJsonTrondheim()} style={this.getStyle} >
+            <Popup>
+              <h1>This is Trondheim</h1>
+            </Popup>
+          </GeoJSON>
+          <GeoJSON className="T2" key="2" data={getGeoJsonTrondheim2()} style={this.getStyle2}>
+            <Popup>
+              <strong>T2</strong>
+            </Popup>
+          </GeoJSON>
+          <GeoJSON className="Line" key="3" data={getGeoJsonLine()}>
+            <Popup>
+              <p>I'm all a line</p>
+            </Popup>
+          </GeoJSON>   
+        </div>   
       </Map>
     );
   }
 }
 
+export function reorderLayers(layers) {
+  var i;
+  var g = document.getElementsByTagName("g");
+  for (i=layers.length; i > -1; i--){
+    var map_layer = document.getElementsByClassName(layers[i]+" leaflet-interactive")[0]
+    console.log(map_layer)
+    $(map_layer).appendTo(g);
+  }
+
+}
+
 export default MainMap;
+
+
 
 function getGeoJsonLine() {
   return {

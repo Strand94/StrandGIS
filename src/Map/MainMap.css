@@ -1,3 +1,13 @@
 .map {
     height: 100vh;
+    z-index: 1;
+}
+
+.T2 {
+    stroke: red;
+    z-index: 3;
+}
+
+.T1 {
+    z-index: 5;
 }

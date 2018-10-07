@@ -6,6 +6,8 @@ import App from './App';
 import Sortable from 'sortablejs';
 import registerServiceWorker from './registerServiceWorker';
 import {reorderLayers} from './Map/MainMap'
+import $ from "jquery";
+
 
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();
@@ -40,3 +42,10 @@ Sortable.create(layer_list,{
     }
 })
 
+$( '.buffer' ).click(function() {
+    $('.buffer_content').toggle();
+});
+
+$( '.dissolve' ).click(function() {
+    $('.dissolve_content').toggle();
+});

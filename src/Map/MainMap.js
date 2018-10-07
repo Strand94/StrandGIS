@@ -1,16 +1,7 @@
 import React, { Component } from 'react';
-import L from 'leaflet'
-import {Map, TileLayer, Marker, Popup, GeoJSON, LayerGroup, LayersControl, Pane} from 'react-leaflet';
+import {Map, TileLayer, Popup, GeoJSON} from 'react-leaflet';
 import './MainMap.css';
 import $ from "jquery";
-
-
-var myIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.3.4/dist/images/marker-icon.png',
-  iconSize: [26, 42],
-  iconAnchor: [13, 42],
-  popupAnchor: [0, -45],
-});
 
 class MainMap extends Component {
   //Initial value for coordinated and zoom level
@@ -19,6 +10,7 @@ class MainMap extends Component {
     lng: 10.4,
     zoom: 13,
   }
+
 
   getStyle = {
     "color": "#ff7800",

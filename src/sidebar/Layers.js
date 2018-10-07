@@ -6,6 +6,7 @@ class Layers extends Component{
         return(
         <div id="layers">
             <p id="subtitle">Layers</p>
+            <p id='sub_info'>Click to select, drag to reorder.</p>
             <div>
                 <ul id="sortable_layers" className="ui-sortable">
                     <li className="T1 layer active">Trondheim</li>

@@ -10,42 +10,50 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+NPM - The Javascript package manager: [www.npmjs.com](https://www.npmjs.com/)
+
+git - Distributed version control system: [git-scm.com/download](https://git-scm.com/downloads)
+
 
 ### Installing
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
+First you need to clone the project from Github to a folder of your choice.
 
 ```
-Give the example
+git clone https://github.com/Strand94/TBA4251.git
 ```
-
-And repeat
+Then navigate to the folder in your terminal, and install the required packages
 
 ```
-until finished
+npm install
 ```
+Finally all you need to do is to run the server locally on your computer
 
-End with an example of getting some data out of the system or using it for a little demo
+```
+npm start
+```
 
 
 ## Deployment
 
-This website will be deplyoed at all time on [Strand94.Github.io/TBA4251](https://strand94.github.io/TBA4251)
+This website will be deployed at all time on [Strand94.Github.io/TBA4251](https://strand94.github.io/TBA4251)
 
 ## Built With
 
 * [React](https://reactjs.org/docs/getting-started.html) - The web framework used
 * [React-Leaflet](https://react-leaflet.js.org/) - Leaflet components for React
 
+## Packages used
+* [Jquery](https://jquery.com/) - The javascript library.
+* [Sortable.js](https://github.com/RubaXa/Sortable) - a JavaScript library for reorderable drag-and-drop lists.
+* [gh-pages](https://www.npmjs.com/package/gh-pages/) - Used to seamlessly deploy project using a simple commando.
+* [leaflet](https://leafletjs.com/download.html) -  JavaScript library for mobile-friendly interactive maps.
 
-## Authors
+## Author
 
-* **Andreas G. Strand** - *Initial work* - [Strand94](https://github.com/Strand94)
+* **Andreas G. Strand** - [Strand94](https://github.com/Strand94)
 
 ## License
 

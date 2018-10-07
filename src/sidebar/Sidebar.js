@@ -22,6 +22,22 @@ class Sidebar extends Component {
                             Dissolve
                         </li>
                         <li hidden className="dissolve_content"><Dissolve/></li>
+                        <li className="union">
+                            Union
+                        </li>
+                        <li hidden className="union_content"></li>
+                        <li className="intersection">
+                            Intersection
+                        </li>
+                        <li hidden className="intersection_content"></li>
+                        <li className="diffrence">
+                            Diffrence
+                        </li>
+                        <li hidden className="diffrence_content"></li>
+                        <li className="extract">
+                            Extract Feature
+                        </li>
+                        <li hidden className="extract_content"></li>
                     </ul>
                 </div>
                 <div id='Layers'>

@@ -19,12 +19,31 @@
   }
   
   .buffer_content{
-    margin-bottom: 50px !important;
+    margin-bottom: 55px !important;
   }
   
   .dissolve{
     background-color: #e0b84b;
   }
+
+  .union{
+    background-color: purple;
+  }
+
+  .intersection{
+    background-color: green;
+  }
+
+  .diffrence{
+    background-color: red;
+  }
+
+  .extract {
+    color: black;
+    background-color: white;
+  }
+
+
 
 #tool_layer {
   color: white;

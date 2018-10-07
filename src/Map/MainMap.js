@@ -65,7 +65,6 @@ export function reorderLayers(layers) {
     console.log(map_layer)
     $(map_layer).appendTo(g);
   }
-
 }
 
 export default MainMap;

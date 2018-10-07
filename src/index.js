@@ -7,6 +7,7 @@ import Sortable from 'sortablejs';
 import registerServiceWorker from './registerServiceWorker';
 import {reorderLayers} from './Map/MainMap'
 import $ from "jquery";
+import {setBuffer} from './sidebar/tools/Buffer'
 
 
 ReactDOM.render(<App />, document.getElementById('root'));
@@ -28,17 +29,8 @@ for (var i = 0; i < layer.length; i++) {
 // Makes the sidebar layer list sortable
 Sortable.create(layer_list,{
     onEnd: function (e){
-        // Collects the ID names for the layers
-        var i;
-        var list_order = [];
-        var a = document.getElementsByClassName("layer")
-        for (i=0; i < a.length; i++){
-            var class_name = ((a[i].className).split(" "))
-            list_order.push(class_name[0])
-        }
         // Reorders the layers based on ID name ordering.
-        reorderLayers(list_order)
-        
+        reorderLayers(getLayers())
     }
 })
 
@@ -49,3 +41,25 @@ $( '.buffer' ).click(function() {
 $( '.dissolve' ).click(function() {
     $('.dissolve_content').toggle();
 });
+
+$( '.intersection' ).click(function() {
+   console.log(getLayers())
+});
+
+$( '#apply_buffer' ).click(function() {
+    var selected_layer = document.getElementsByClassName("layer active");
+    var meters = document.getElementById('buffer_number');
+    setBuffer(selected_layer[0].innerHTML, meters.value)
+});
+
+// Function that returns all layers (and their order.)
+function getLayers(){
+    var i;
+    var list_order = [];
+    var a = document.getElementsByClassName("layer")
+    for (i=0; i < a.length; i++){
+        var class_name = ((a[i].className).split(" "))
+        list_order.push(class_name[0])
+    }
+    return list_order;
+}

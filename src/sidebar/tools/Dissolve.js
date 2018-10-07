@@ -5,7 +5,7 @@ class Dissolve extends Component{
     render(){
         return(
         <div>
-           <button>apply</button>
+           <button id="apply_dissolve">Apply</button>
         </div>
         )       
     }

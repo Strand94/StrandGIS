@@ -7,11 +7,10 @@ import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
+var fs = require('fs');
 
 // Gets call from Buffer and sends data to MainMap and Layer
 export function callBuffer(buffer_radius, geojson_file_key) {
-  console.log("Buffer Call")
-  console.log(buffer_radius)
   var layer_position = find_called_geojson(geojson_file_key)
   var selected_layer_geojson = this.state.layer_list[layer_position][2]
   var selected_layer_name = this.state.layer_list[layer_position][0]
@@ -21,6 +20,16 @@ export function callBuffer(buffer_radius, geojson_file_key) {
   createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffered)
 }
 
+export function callDissolve(geojson_file_key) {
+  var layer_position = find_called_geojson(geojson_file_key)
+  var selected_layer_geojson = this.state.layer_list[layer_position][2]
+  var selected_layer_name = this.state.layer_list[layer_position][0]
+  var dissolved = turf.dissolve(selected_layer_geojson)
+  const dissolve_layer_key = generateKey()
+  get_newgeojson(dissolved, dissolve_layer_key)
+  createLayer(selected_layer_name+' dissolved', dissolve_layer_key, dissolved)
+
+}
 // Finds position in layer list for geojson based on key value.
 function find_called_geojson(geojson_file_key){
   for (var i = 0; i < this.state.layer_list.length; i++) {
@@ -52,6 +61,7 @@ class Sidebar extends Component {
       layer_list: []
     }
     callBuffer = callBuffer.bind(this)
+    callDissolve = callDissolve.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)

@@ -5,7 +5,6 @@ import { new_geojsonToParent } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
 
 
-
 class Layers extends Component{
   constructor(props){
     super(props)
@@ -59,12 +58,13 @@ class Layers extends Component{
           </div>
           <div>
             <p id="subtitle">Add Layer</p>
-            <p id='sub_info'>Click button and upload GeoJSON file.</p>
             <div>
               {/* Hidden input field to handle file upload on button click. */}
               <input id='fileid' type='file' onChange={(param) => this.readGeoJSONFile(param)} accept=".GeoJSON,.JSON" hidden/>
-              <button onClick={(param) => this.activateFileUpload(param)}>GEOJSON</button>
+              <button id="upload" onClick={(param) => this.activateFileUpload(param)}>Upload file</button>
             </div>
+            <p id='sub_info'>Click button and upload GeoJSON or JSON file.</p>
+
           </div>
       </div>
     )

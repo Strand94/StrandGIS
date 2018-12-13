@@ -5,7 +5,6 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import {Map, TileLayer, Popup, GeoJSON, FeatureGroup, Circle} from 'react-leaflet';
 import './MainMap.css';
 import $ from "jquery";
-import geojson from '../geojson/nord_trondelag.json';
 // store the map configuration properties in an object,
 // we could also move this to a separate file & import it if desired.
 let config = {};
@@ -51,15 +50,12 @@ class MainMap extends Component {
 
   // code to run just after the component "mounts" / DOM elements are created
   componentDidMount() {
-    // fetches the initial geojson data.
-    this.getData();
-     // creates the Leaflet map object
+    // creates the Leaflet map object
     if (!this.state.map) this.init(this._mapNode);
   }
 
   // code to run when the component receives new props or state.
   componentDidUpdate(prevProps, prevState) {
-    console.log("Component Update")
     // Render map again if new geojson data is added.
     if (this.state.geojson !== prevState.geojson){
       this.addGeoJSONLayer(this.state.geojson, this.state.geojson_key);
@@ -70,13 +66,6 @@ class MainMap extends Component {
   componentWillUnmount() {
     // this destroys the Leaflet map object & related event listeners
     this.state.map.remove();
-  }
-
-// Loads the initial geojson data. (TODO: May be removed in future)
-  getData() {
-    this.setState({
-      geojson
-    });
   }
 
 // Adds geojson layer to map, while giving it required features and class name

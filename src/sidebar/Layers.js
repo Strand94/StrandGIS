@@ -45,8 +45,6 @@ class Layers extends Component{
           <p id='sub_info'>Click to select, drag to reorder.</p>
           <div>
               <ul id="sortable_layers" className="ui-sortable">
-                  <li className="T1 layer active">Trondheim</li>
-                  <li className="T2 layer">Trondheim 2</li>
                   {listItems}
               </ul>
           </div>
@@ -118,7 +116,9 @@ function addLayerProperties() {
   for (var i = 0; i < layer.length; i++) {
       layer[i].addEventListener("click", function() {
           var current = document.getElementsByClassName("active");
+          if (current[0]){
           current[0].className = current[0].className.replace(" active", "");
+          }
           this.className += " active";
       });
   }

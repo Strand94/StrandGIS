@@ -4,7 +4,30 @@ import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
 
+export function updateBuffer(buffer_radius) {
+  var buffer_radius = buffer_radius;
+
+  this.setState({buffer_radius})
+}
+
+export function new_geojsonToParent(new_geojson) {
+  var new_geojson = new_geojson
+  this.setState({ new_geojson })
+}
+
 class Sidebar extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      buffer_radius: 10,
+      buffer_geojson: null,
+      new_geojson: null,
+    }
+    updateBuffer = updateBuffer.bind(this)
+    new_geojsonToParent = new_geojsonToParent.bind(this)
+
+  }
+
     render() {
         return ([
             <div id="sidebar_content">
@@ -15,7 +38,7 @@ class Sidebar extends Component {
                     <p id="subtitle">Tools</p>
                     <ul id="tool_layer">
                         <li className="buffer">
-                            Buffer
+                            Buffer {this.state.buffer_radius}
                         </li>
                         <li hidden className="buffer_content"><Buffer/></li>
                         <li className="dissolve">
@@ -43,7 +66,7 @@ class Sidebar extends Component {
                 <div id='Layers'>
                     <Layers/>
                 </div>
-            </div>   
+            </div>
         ])
       }
 }

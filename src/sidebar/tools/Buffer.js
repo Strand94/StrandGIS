@@ -1,29 +1,37 @@
 import React, { Component } from 'react';
 import "./Buffer.css"
-import map from '../../Map/MainMap'
+import MainMap from '../../Map/MainMap'
 import L from 'leaflet'
-
+import {updateBuffer} from '../Sidebar.js'
+import geojson from '../../geojson/sor_trondelag.json';
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
 
+
 class Buffer extends Component{
+  constructor(props) {
+    super(props)
+  }
     render(){
         return(
         <div>
            <div id="tool_title">Distance:</div>
            <input id="buffer_number" type="number" placeholder="Buffer in meters"></input>
            <br></br>
-           <button id="apply_buffer">Apply</button>
+           <button onClick={(param) => this.executeBuffer(param)}>Apply</button>
         </div>
-        )       
+        )
+    }
+
+    executeBuffer(){
+      var number = document.getElementById('buffer_number').value;
+      updateBuffer(number)
     }
 }
 
+
 export function setBuffer(geojson, meters){
-    console.log(meters+"m buffer on layer: "+geojson)
-    var point = turf.point([-90.548630, 14.616599]);
-    var buffered = turf.buffer(point, 500, {units: 'miles'});
+  MainMap.setState(geojson=null)
 }
 
 export default Buffer;
-

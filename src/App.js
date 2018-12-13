@@ -7,9 +7,7 @@ class App extends Component {
     render() {
         return ([
           <div id='page_content'>
-            <div id='map'>
-              <MainMap key='mainmap_key'/>
-            </div>
+            <MainMap key='mainmap_key'/>
             <div id='sidebar'>
               <Sidebar key='sidebar_key'/>
             </div>

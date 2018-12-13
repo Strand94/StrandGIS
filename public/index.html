@@ -10,7 +10,9 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <script src="/js/leaflet-0.7.2/leaflet.ajax.min.js"></script>
+
+    <!-- Importing React-Leaflet-Draw source code -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.3/leaflet.draw.css"/>
 
 
     <!--
@@ -30,8 +32,8 @@
     </noscript>
     <!-- Loads the App app -->
     <div id="root"></div>
-    
-  
+
+
 
 
     <!--
@@ -45,4 +47,6 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   </body>
+  <script src="./../src/js/leaflet-0.7.2/leaflet.ajax.min.js"></script>
+
 </html>

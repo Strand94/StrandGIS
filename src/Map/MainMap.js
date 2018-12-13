@@ -1,58 +1,135 @@
 import React, { Component } from 'react';
-import {Map, TileLayer, Popup, GeoJSON} from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import {Map, TileLayer, Popup, GeoJSON, FeatureGroup, Circle} from 'react-leaflet';
 import './MainMap.css';
 import $ from "jquery";
+import geojson from '../geojson/nord_trondelag.json';
+// store the map configuration properties in an object,
+// we could also move this to a separate file & import it if desired.
+let config = {};
+config.params = {
+  center: [63.43,10.4],
+  zoomControl: false,
+  zoom: 12,
+  scrollwheel: false,
+  legends: true,
+  infoControl: false,
+  attributionControl: true
+};
+config.tileLayer = {
+  uri: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  params: {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    id: '',
+    accessToken: ''
+  }
+};
+
 
 class MainMap extends Component {
-  //Initial value for coordinated and zoom level
-  state = {
-    lat: 63.43,
-    lng: 10.4,
-    zoom: 13,
+  constructor(props) {
+    super(props);
+    this.state = {
+      map: null,
+      tileLayer: null,
+      geojsonLayer: null,
+      geojson: null,
+    };
+    this._mapNode = null;
+    this.onEachFeature = this.onEachFeature.bind(this);
   }
 
+  // code to run just after the component "mounts" / DOM elements are created
+  componentDidMount() {
+    // fetches the initial geojson data.
+    this.getData();
+     // creates the Leaflet map object
+    if (!this.state.map) this.init(this._mapNode);
+  }
 
-  getStyle = {
-    "color": "#ff7800",
-    "weight": 4,
-    "opacity": 0.65
-  };
+  // code to run when the component receives new props or state.
+  componentDidUpdate(prevProps, prevState) {
+    console.log("Component Update")
+    // Render map again if new geojson data is added.
+    if (this.state.geojson !== prevState.geojson){
+      this.addGeoJSONLayer(this.state.geojson);
+    }
 
-  getStyle2 = {
-    "color": "#00000",
-    "weight": 4,
-    "opacity": 0.65
-  };
+  }
+  // code to run just before unmounting the component
+  componentWillUnmount() {
+    // this destroys the Leaflet map object & related event listeners
+    this.state.map.remove();
+  }
+
+// Loads the initial geojson data. (TODO: May be removed in future)
+  getData() {
+    this.setState({
+      geojson
+    });
+  }
+
+// Adds geojson layer to map, while giving it required features and class name
+  addGeoJSONLayer(geojson) {
+    console.log("Add geojon layer")
+    const geojsonLayer = L.geoJson(geojson, {
+      onEachFeature: this.onEachFeature,
+    });
+
+    // add our GeoJSON layer to the Leaflet map object
+    geojsonLayer.setStyle({'className': 'map-path'}); //will add the required class
+    geojsonLayer.addTo(this.state.map);
+
+    // store the Leaflet GeoJSON layer in our component state.
+    this.setState({ geojsonLayer });
+   }
+
+  zoomToFeature(target) {
+    var fitBoundsParams = {
+      paddingTopLeft: [200,10],
+      paddingBottomRight: [10,10]
+    };
+  }
+
+  onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.NAME) {
+
+      // assemble the HTML for the markers' popups (Leaflet's bindPopup method doesn't accept React JSX)
+      const popupContent = `<h3>${feature.properties.NAME}</h3>`
+
+      // add our popups
+      layer.bindPopup(popupContent);
+
+    }
+
+
+}
+
+  // Initializs the map
+  init(id) {
+    if (this.state.map) return;
+    // this function creates the Leaflet map object and is called after the Map component mounts
+    let map = L.map(id, config.params);
+    L.control.zoom({ position: "bottomleft"}).addTo(map);
+    L.control.scale({ position: "bottomleft"}).addTo(map);
+
+    // a TileLayer is used as the "basemap"
+    const tileLayer = L.tileLayer(config.tileLayer.uri, config.tileLayer.params).addTo(map);
+
+    // set our state to include the tile layer
+    this.setState({ map, tileLayer });
+  }
 
   render() {
     //Set the map position and zoom level
     const position = [this.state.lat, this.state.lng]
 
     return (
-
-      <Map ref={Map => this.map = Map} className="map" center={position} zoom={this.state.zoom}>
-        <TileLayer
-          latLngBounds = {this.mybounds}
-          attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        /><div>
-          <GeoJSON className="T1" key="1" data={getGeoJsonTrondheim()} style={this.getStyle} >
-            <Popup>
-              <h1>This is Trondheim</h1>
-            </Popup>
-          </GeoJSON>
-          <GeoJSON className="T2" key="2" data={getGeoJsonTrondheim2()} style={this.getStyle2}>
-            <Popup>
-              <strong>T2</strong>
-            </Popup>
-          </GeoJSON>
-          <GeoJSON className="Line" key="3" data={getGeoJsonLine()}>
-            <Popup>
-              <p>I'm all a line</p>
-            </Popup>
-          </GeoJSON>   
-        </div>   
-      </Map>
+      <div id="mapUI">
+         <div ref={(node) => this._mapNode = node} id="map" />
+     </div>
     );
   }
 }
@@ -67,61 +144,6 @@ export function reorderLayers(layers) {
   }
 }
 
+
+
 export default MainMap;
-
-
-
-function getGeoJsonLine() {
-  return {
-  "type": "FeatureCollection",
-  "style": "color:red",
-  "features": [
-    {"type": "LineString", "coordinates": [[10.3715508,63.415876],[10.4391528,63.412507]]},
-  ]
-      }
-}
-
-function getGeoJsonTrondheim() {
-  return {
-  "type": "FeatureCollection",
-  "features": [
-    { "type": "Polygon", "coordinates": [ [ [ 10.726075200000011, 63.307889800000062 ], [ 10.6968351, 63.320800200000058 ], [ 10.6897858, 63.327868 ], [ 10.69874840000001, 63.349295900000065 ], [ 10.6822353, 63.355451600000066 ], [ 10.672840900000011, 63.363300300000063 ], [ 10.637810900000011, 63.35406050000006 ], [ 10.637852300000011, 63.355601700000058 ], [ 10.65261520000001, 63.360054700000056 ], [ 10.65743650000001, 63.364744300000062 ], [ 10.64324870000001, 63.371836900000062 ], [ 10.610180500000011, 63.373221300000054 ], [ 10.609356500000011, 63.374894500000067 ], [ 10.6177679, 63.378744600000054 ], [ 10.610412200000011, 63.388627200000059 ], [ 10.61141640000001, 63.394593500000056 ], [ 10.617107, 63.398114200000066 ], [ 10.61124480000001, 63.398817600000065 ], [ 10.60472160000001, 63.407790300000066 ], [ 10.5937353, 63.409042800000059 ], [ 10.589541100000011, 63.413913600000065 ], [ 10.601460100000011, 63.419421800000066 ], [ 10.59802680000001, 63.425519900000054 ], [ 10.59854180000001, 63.428741300000063 ], [ 10.582682300000011, 63.44033910000006 ], [ 10.53966260000001, 63.471775 ], [ 10.548625200000011, 63.497907800000057 ], [ 10.548625200000011, 63.497907800000057 ], [ 10.4901011, 63.518845600000063 ], [ 10.4901011, 63.518845600000063 ], [ 10.23577640000001, 63.499590200000057 ], [ 10.23577640000001, 63.499590200000057 ], [ 10.053951700000011, 63.458155400000066 ], [ 10.053951700000011, 63.458155400000066 ], [ 10.0044048, 63.374521600000065 ], [ 10.0044048, 63.374521600000065 ], [ 10.0975223, 63.341878200000053 ], [ 10.1880901, 63.333725800000067 ], [ 10.1880901, 63.333725800000067 ], [ 10.20527080000001, 63.344841200000054 ], [ 10.22691720000001, 63.343249200000066 ], [ 10.257133100000011, 63.339346200000058 ], [ 10.258291800000011, 63.325135400000057 ], [ 10.2771402, 63.321401400000063 ], [ 10.2782474, 63.317620700000056 ], [ 10.28348310000001, 63.314514100000061 ], [ 10.29579980000001, 63.31577450000006 ], [ 10.291628400000011, 63.309776400000061 ], [ 10.30396, 63.307354200000056 ], [ 10.314699700000011, 63.305766700000063 ], [ 10.322802100000011, 63.3068 ], [ 10.33275850000001, 63.318391500000054 ], [ 10.355502100000011, 63.323144200000065 ], [ 10.399460500000011, 63.303793100000064 ], [ 10.399460500000011, 63.303793100000064 ], [ 10.3970199, 63.324175900000064 ], [ 10.4329573, 63.331165 ], [ 10.43649350000001, 63.335440800000057 ], [ 10.44260460000001, 63.336865900000063 ], [ 10.442724800000011, 63.338799300000055 ], [ 10.44558290000001, 63.338868600000055 ], [ 10.449265100000011, 63.338834 ], [ 10.45099030000001, 63.337674700000065 ], [ 10.47548640000001, 63.341033 ], [ 10.50241140000001, 63.339369300000058 ], [ 10.51131270000001, 63.340743800000055 ], [ 10.6062666, 63.318669 ], [ 10.61727010000001, 63.318345300000054 ], [ 10.63718280000001, 63.315770600000057 ], [ 10.670253400000011, 63.314255800000055 ], [ 10.726075200000011, 63.307889800000062 ], [ 10.726075200000011, 63.307889800000062 ] ] ] },
-  
-  ]
-  }
-  }
-
-
-  function getGeoJsonTrondheim2() {
-    return {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              9.965972900390625,
-              63.51550032753826
-            ],
-            [
-              9.792938232421875,
-              63.3324127919358
-            ],
-            [
-              10.235137939453123,
-              63.256501616790686
-            ],
-            [
-              10.42877197265625,
-              63.473824908392245
-            ],
-            [
-              9.965972900390625,
-              63.51550032753826
-            ]
-          ]
-        ]
-      }
-    }
-    }

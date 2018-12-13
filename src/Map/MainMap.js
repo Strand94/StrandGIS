@@ -27,9 +27,10 @@ config.tileLayer = {
   }
 };
 
-export function get_newgeojson(new_geojson) {
+export function get_newgeojson(new_geojson, new_geojson_key) {
   var geojson = new_geojson
-  this.setState({ geojson })
+  var geojson_key = new_geojson_key
+  this.setState({ geojson, geojson_key })
 }
 
 
@@ -41,6 +42,7 @@ class MainMap extends Component {
       tileLayer: null,
       geojsonLayer: null,
       geojson: null,
+      geojson_key: null,
     };
     this._mapNode = null;
     this.onEachFeature = this.onEachFeature.bind(this);
@@ -60,7 +62,7 @@ class MainMap extends Component {
     console.log("Component Update")
     // Render map again if new geojson data is added.
     if (this.state.geojson !== prevState.geojson){
-      this.addGeoJSONLayer(this.state.geojson);
+      this.addGeoJSONLayer(this.state.geojson, this.state.geojson_key);
     }
 
   }
@@ -78,14 +80,18 @@ class MainMap extends Component {
   }
 
 // Adds geojson layer to map, while giving it required features and class name
-  addGeoJSONLayer(geojson) {
+  addGeoJSONLayer(geojson, key) {
     console.log("Add geojon layer")
     const geojsonLayer = L.geoJson(geojson, {
       onEachFeature: this.onEachFeature,
     });
 
     // add our GeoJSON layer to the Leaflet map object
-    geojsonLayer.setStyle({'className': 'map-path'}); //will add the required class
+    if (this.state.geojson_key !== null) {
+      geojsonLayer.setStyle({'className': 'map-path '+this.state.geojson_key}); //will add key id to geojson layer.
+    } else {
+      geojsonLayer.setStyle({'className': 'map-path'}); //will add the required class
+    }
     geojsonLayer.addTo(this.state.map);
 
     // store the Leaflet GeoJSON layer in our component state.

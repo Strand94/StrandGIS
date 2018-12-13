@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import "./Buffer.css"
 import MainMap from '../../Map/MainMap'
+
 import L from 'leaflet'
-import {updateBuffer} from '../Sidebar.js'
+import { updateBuffer } from '../Sidebar.js'
 import geojson from '../../geojson/sor_trondelag.json';
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
@@ -25,13 +26,11 @@ class Buffer extends Component{
 
     executeBuffer(){
       var number = document.getElementById('buffer_number').value;
+      var layers = document.getElementById('sortable_layers')
       updateBuffer(number)
     }
 }
 
 
-export function setBuffer(geojson, meters){
-  MainMap.setState(geojson=null)
-}
 
 export default Buffer;

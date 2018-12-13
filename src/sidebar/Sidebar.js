@@ -4,28 +4,57 @@ import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
 import { get_newgeojson } from '../Map/MainMap'
+import { createLayer } from './Layers'
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
 
-export function updateBuffer(buffer_radius, geojson_file) {
-  this.setState({buffer_radius})
+// Gets call from Buffer and sends data to MainMap and Layer
+export function callBuffer(buffer_radius, geojson_file_key) {
+  console.log("Buffer Call")
+  console.log(buffer_radius)
+  var layer_position = find_called_geojson(geojson_file_key)
+  var selected_layer_geojson = this.state.layer_list[layer_position][2]
+  var selected_layer_name = this.state.layer_list[layer_position][0]
+  var buffered = turf.buffer(selected_layer_geojson, buffer_radius, {units: 'meters'});
+  const buffer_layer_key = generateKey()
+  get_newgeojson(buffered, buffer_layer_key)
+  createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffered)
 }
 
+// Finds position in layer list for geojson based on key value.
+function find_called_geojson(geojson_file_key){
+  for (var i = 0; i < this.state.layer_list.length; i++) {
+    if (geojson_file_key == this.state.layer_list[i][1]){
+      return i
+    }
+  }
+}
+
+// Generate new layer layer key
+function generateKey() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+// Fetches GeoJSON properties from Layer and passes them on to MainMap.
 export function new_geojsonToParent(new_geojson, newest_file_key) {
-  console.log("new_geojsonToParent")
-  console.log(newest_file_key)
   get_newgeojson(new_geojson, newest_file_key)
+}
+
+// Fetches layer_list from layers, in order to send geojson data to MainMap.
+export function getLayerList(layer_list) {
+  this.setState({ layer_list })
 }
 
 class Sidebar extends Component {
   constructor(props){
     super(props)
     this.state = {
-      buffer_radius: 10,
-      buffer_geojson: null,
+      layer_list: []
     }
-    updateBuffer = updateBuffer.bind(this)
+    callBuffer = callBuffer.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
+    getLayerList = getLayerList.bind(this)
+    find_called_geojson = find_called_geojson.bind(this)
 
   }
 

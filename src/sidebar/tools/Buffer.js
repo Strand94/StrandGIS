@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import "./Buffer.css"
 import MainMap from '../../Map/MainMap'
-
 import L from 'leaflet'
-import { updateBuffer } from '../Sidebar.js'
+import { callBuffer } from '../Sidebar.js'
 import geojson from '../../geojson/sor_trondelag.json';
+import $ from "jquery";
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
 
@@ -24,10 +24,11 @@ class Buffer extends Component{
         )
     }
 
+    // Sends call to Sidebar to run Buffer code.
     executeBuffer(){
-      var number = document.getElementById('buffer_number').value;
-      var layers = document.getElementById('sortable_layers')
-      updateBuffer(number)
+      var buffer_radius = document.getElementById('buffer_number').value;
+      var layer_key= ($('li.active').attr('id'));
+      callBuffer(buffer_radius, layer_key)
     }
 }
 

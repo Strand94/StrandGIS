@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
 import Sortable from 'sortablejs';
 import './Layers.css';
-import { new_geojsonToParent } from './Sidebar.js'
+import { new_geojsonToParent, getLayerList } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
 
-
+// Class that handles layer logic and uploading of files.
 class Layers extends Component{
   constructor(props){
     super(props)
     this.state = {
-      newest_file_name: null,
-      newest_file_key: null,
-      newest_geoJSON: null,
       layer_list: []
     }
     this.readGeoJSONFile = this.readGeoJSONFile.bind(this);
@@ -20,11 +17,8 @@ class Layers extends Component{
 
   componentDidUpdate(prevProps, prevState) {
     // Appending new file name to Layer list with a unique key value.
-    if (this.state.newest_file_name !== prevState.newest_file_name ){
-      this.setState({
-        layer_list: [...this.state.layer_list, [this.state.newest_file_name, this.state.newest_file_key, this.state.newest_geoJSON]]
-        //NOTE: Math.random should be unique (with less than 10.000 simulatanious layers) because of its seeding algorithm.
-      })
+    if (this.state.layer_list !== prevState.layer_list ){
+      getLayerList(this.state.layer_list)
     }
 
     // Make all the new layers selectable and dragable.
@@ -85,6 +79,7 @@ class Layers extends Component{
     //Retrieving the first (and only!) File from the FileList object
     var file = file_upload.target.files[0];
     const newest_file_key = Math.random().toString(36).substr(2, 9);
+    //NOTE: Math.random should be unique (with less than 10.000 simulatanious layers) because of its seeding algorithm.
     const newest_file_name = file.name;
 
     if (file) {
@@ -107,9 +102,12 @@ class Layers extends Component{
   }
 }
 
+// helper function that collect read data and sets new state.
 export function createLayer(newest_file_name, newest_file_key, new_geojson){
-    this.setState({ newest_file_name, newest_file_key, new_geojson})
-  }
+  this.setState({
+    layer_list: [...this.state.layer_list, [newest_file_name, newest_file_key, new_geojson]]
+  })
+}
 
 function addLayerProperties() {
   // Gets the class name for the layer list.

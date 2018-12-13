@@ -27,6 +27,11 @@ config.tileLayer = {
   }
 };
 
+export function get_newgeojson(new_geojson) {
+  var geojson = new_geojson
+  this.setState({ geojson })
+}
+
 
 class MainMap extends Component {
   constructor(props) {
@@ -39,6 +44,7 @@ class MainMap extends Component {
     };
     this._mapNode = null;
     this.onEachFeature = this.onEachFeature.bind(this);
+    get_newgeojson = get_newgeojson.bind(this)
   }
 
   // code to run just after the component "mounts" / DOM elements are created

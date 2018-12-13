@@ -3,6 +3,7 @@ import Layers from "./Layers";
 import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
+import { get_newgeojson } from '../Map/MainMap'
 
 export function updateBuffer(buffer_radius) {
   var buffer_radius = buffer_radius;
@@ -12,7 +13,7 @@ export function updateBuffer(buffer_radius) {
 
 export function new_geojsonToParent(new_geojson) {
   var new_geojson = new_geojson
-  this.setState({ new_geojson })
+  get_newgeojson(new_geojson)
 }
 
 class Sidebar extends Component {
@@ -21,7 +22,6 @@ class Sidebar extends Component {
     this.state = {
       buffer_radius: 10,
       buffer_geojson: null,
-      new_geojson: null,
     }
     updateBuffer = updateBuffer.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Sortable from 'sortablejs';
 import './Layers.css';
-import { new_geojsonToParent, getLayerList } from './Sidebar.js'
+import { new_geojsonToParent, getLayerList, deleteLayerCall } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
+import $ from "jquery";
+
 
 // Class that handles layer logic and uploading of files.
 class Layers extends Component{
@@ -42,6 +44,7 @@ class Layers extends Component{
     return(
       <div id="layers">
           <p id="subtitle">Layers</p>
+          <button id="delete" onClick={(param) => this.deleteLayer(param)}>[TRASH]</button>
           <p id='sub_info'>Click to select, drag to reorder.</p>
           <div>
               <ul id="sortable_layers" className="ui-sortable">
@@ -66,6 +69,12 @@ class Layers extends Component{
   activateFileUpload(){
     document.getElementById('fileid').click();
     document.getElementById('fileid').addEventListener('change', this.readGeoJSONFile, true);
+  }
+
+// Sends call to Sidebar to delete selected layer, when delete button is clicked.
+  deleteLayer(){
+    var delete_layer_key= ($('li.active').attr('id'));
+    deleteLayerCall(delete_layer_key)
   }
 
  /*

@@ -26,12 +26,12 @@ config.tileLayer = {
   }
 };
 
+// Gets call from Sidebar to add geojson file to the map.
 export function get_newgeojson(new_geojson, new_geojson_key) {
   var geojson = new_geojson
   var geojson_key = new_geojson_key
   this.setState({ geojson, geojson_key })
 }
-
 
 class MainMap extends Component {
   constructor(props) {
@@ -54,13 +54,12 @@ class MainMap extends Component {
     if (!this.state.map) this.init(this._mapNode);
   }
 
-  // code to run when the component receives new props or state.
+  // code to run when the component receives prop or state updates.
   componentDidUpdate(prevProps, prevState) {
     // Render map again if new geojson data is added.
     if (this.state.geojson !== prevState.geojson){
       this.addGeoJSONLayer(this.state.geojson, this.state.geojson_key);
     }
-
   }
   // code to run just before unmounting the component
   componentWillUnmount() {
@@ -68,9 +67,10 @@ class MainMap extends Component {
     this.state.map.remove();
   }
 
+
+
 // Adds geojson layer to map, while giving it required features and class name
   addGeoJSONLayer(geojson, key) {
-    console.log("Add geojon layer")
     const geojsonLayer = L.geoJson(geojson, {
       onEachFeature: this.onEachFeature,
     });

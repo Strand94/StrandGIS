@@ -3,8 +3,10 @@ import Layers from "./Layers";
 import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
+import Union from './tools/Union';
 import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
+import $ from "jquery";
 var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
 var fs = require('fs');
@@ -20,6 +22,7 @@ export function callBuffer(buffer_radius, geojson_file_key) {
   createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffered)
 }
 
+// Gets call from Dissolve and sends data to MainMap and Layer
 export function callDissolve(geojson_file_key) {
   var layer_position = find_called_geojson(geojson_file_key)
   var selected_layer_geojson = this.state.layer_list[layer_position][2]
@@ -28,8 +31,24 @@ export function callDissolve(geojson_file_key) {
   const dissolve_layer_key = generateKey()
   get_newgeojson(dissolved, dissolve_layer_key)
   createLayer(selected_layer_name+' dissolved', dissolve_layer_key, dissolved)
-
 }
+
+// Gets call from Union and sends data to MainMap and Layer
+export function callUnion(geojson_file_key1, geojson_file_key2) {
+  console.log("no response.")
+}
+
+export function deleteLayerCall(geojson_file_key) {
+  var layer_position = find_called_geojson(geojson_file_key)
+  var selected_layer_geojson = this.state.layer_list[layer_position][2]
+  //
+  $( "#"+geojson_file_key+"" ).remove();
+  //
+  $( "."+geojson_file_key+"" ).remove();
+
+  console.log("Delete layer: "+geojson_file_key)
+}
+
 // Finds position in layer list for geojson based on key value.
 function find_called_geojson(geojson_file_key){
   for (var i = 0; i < this.state.layer_list.length; i++) {
@@ -65,6 +84,7 @@ class Sidebar extends Component {
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)
+    deleteLayerCall = deleteLayerCall.bind(this)
 
   }
 
@@ -88,7 +108,7 @@ class Sidebar extends Component {
                   <li className="union">
                       Union
                   </li>
-                  <li hidden className="union_content"></li>
+                  <li hidden className="union_content"><Union/></li>
                   <li className="intersection">
                       Intersection
                   </li>

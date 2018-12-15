@@ -85,6 +85,7 @@ class MainMap extends Component {
       geojsonLayer.setStyle({'className': 'map-path'}); //will add the required class
     }
     geojsonLayer.addTo(this.state.map);
+    this.state.map.fitBounds(geojsonLayer.getBounds())
 
     // store the Leaflet GeoJSON layer in our component state.
     this.setState({ geojsonLayer });

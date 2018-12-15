@@ -3,7 +3,7 @@
     height: 30px;
     padding-top: 0;
   }
-  
+
 #title {
     padding: 6px 8px 6px 16px;
     margin-top: -17px;
@@ -17,17 +17,21 @@
   .buffer{
     background-color: #4d4fca;
   }
-  
+
   .buffer_content{
     margin-bottom: 55px !important;
   }
-  
+
   .dissolve{
     background-color: #e0b84b;
   }
 
   .union{
     background-color: purple;
+  }
+
+  .union_content{
+    margin-bottom: 90px !important;
   }
 
   .intersection{

@@ -3,6 +3,7 @@ import Sortable from 'sortablejs';
 import './Layers.css';
 import { new_geojsonToParent, getLayerList, deleteLayerCall } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
+import { getLayerListUnion } from './tools/Union.js'
 import $ from "jquery";
 
 
@@ -21,6 +22,7 @@ class Layers extends Component{
     // Appending new file name to Layer list with a unique key value.
     if (this.state.layer_list !== prevState.layer_list ){
       getLayerList(this.state.layer_list)
+      getLayerListUnion(this.state.layer_list)
     }
 
     // Make all the new layers selectable and dragable.

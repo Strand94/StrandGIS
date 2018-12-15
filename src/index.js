@@ -23,3 +23,7 @@ $( '.dissolve' ).click(function() {
 $( '.intersection' ).click(function() {
    console.log("Intersect")
 });
+
+$( '.union' ).click(function() {
+  $('.union_content').toggle();
+});

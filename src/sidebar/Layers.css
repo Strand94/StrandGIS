@@ -15,6 +15,10 @@
 
 }
 
+#delete {
+  font-size: 20px;
+}
+
 #sortable_layers {
     color: white;
     list-style-type: none;

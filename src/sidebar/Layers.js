@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import Sortable from 'sortablejs';
 import './Layers.css';
-import { new_geojsonToParent, getLayerList, deleteLayerCall } from './Sidebar.js'
+import { new_geojsonToParent, getLayerList, deleteLayerCall, geojsonMultiPolygonToPolygon } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
 import { getLayerListUnion } from './tools/Union.js'
 import { getLayerListIntersect } from './tools/Intersect.js'
 import { getLayerListDifference } from './tools/Difference.js'
 import $ from "jquery";
+var turf = require('@turf/turf')
+
 
 
 // Class that handles layer logic and uploading of files.
@@ -128,9 +130,38 @@ class Layers extends Component{
       reader.onload = function(e) {
         const new_geojson = JSON.parse(e.target.result)
 
+        // Checks the uploaded file, and cleans the data, making everything on same format.
+        if (new_geojson.type == 'FeatureCollection') {
+          var geojson_features = new_geojson.features
+          var new_features = []
+
+          for (var i = 0; i < geojson_features.length; i++) {
+            console.log(geojson_features[i])
+            if(geojson_features[i].geometry.type == 'Polygon') {
+              new_features.push(geojson_features[i])
+            }
+            else if(geojson_features[i].geometry.type == 'MultiPolygon') {
+              for (var j = 0; j < geojson_features[i].geometry.coordinates.length; j++) {
+                var feature = {"type": "Feature", "properties": {},  "geometry": { "type": "Polygon", "coordinates": geojson_features[i].geometry.coordinates[j] }}
+                new_features.push(feature)
+              }
+            }
+            else if(geojson_features[i].geometry.type == 'Point') {
+              console.log(new_geojson)
+              var circle = turf.circle(geojson_features[i].geometry.coordinates, 0.0025)
+              new_features.push(circle)
+            }
+          }
+          var clean_geojson = {"type":"FeatureCollection","features": new_features };
+        } else if (new_geojson.type == 'Feature') {
+            var clean_geojson = {"type":"FeatureCollection","features": new_geojson };
+        } else {
+          var clean_geojson = clean_data(new_geojson)
+        }
+
         // Sending the JSON extracted from file to Parent component.
-        new_geojsonToParent(new_geojson, newest_file_key)
-        createLayer(newest_file_name, newest_file_key, new_geojson)
+        new_geojsonToParent(clean_geojson, newest_file_key)
+        createLayer(newest_file_name, newest_file_key, clean_geojson)
 
 
       }
@@ -142,6 +173,22 @@ class Layers extends Component{
 
   }
 }
+
+// Function that takes in all kinds of GeoJSON/JSON map data and cleans it.
+export function clean_data(new_geojson) {
+  if (new_geojson.type == 'Polygon') {
+    var geojson = {"type":"FeatureCollection","features":[{"type": "Feature", "properties": {},  "geometry": { "type": "Polygon", "coordinates": new_geojson.coordinates }}]};
+    return geojson
+  } else if (new_geojson.type == 'MultiPolygon') {
+      return geojsonMultiPolygonToPolygon(new_geojson)
+  } else if (new_geojson.type == 'Point') {
+    var circle = turf.circle(new_geojson.coordinates, 2)
+    var geojson = {"type":"FeatureCollection","features": circle };
+    return geojson
+  }
+
+}
+
 
 // helper function that collect read data and sets new state.
 export function createLayer(newest_file_name, newest_file_key, new_geojson){

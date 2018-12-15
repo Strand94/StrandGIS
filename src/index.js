@@ -31,3 +31,7 @@ $( '.union' ).click(function() {
 $( '.intersect' ).click(function() {
   $('.intersect_content').toggle();
 });
+
+$( '.difference' ).click(function() {
+  $('.difference_content').toggle();
+});

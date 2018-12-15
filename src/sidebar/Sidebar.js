@@ -4,14 +4,13 @@ import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
 import Union from './tools/Union';
-import Intersect from './tools/Intersect'
+import Intersect from './tools/Intersect';
+import Difference from './tools/Difference';
 import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
 import $ from "jquery";
 import L from 'leaflet';
-var buffer = require('@turf/buffer')
 var turf = require('@turf/turf')
-var fs = require('fs');
 
 // Gets call from Buffer and sends data to MainMap and Layer
 export function callBuffer(buffer_radius, geojson_file_key) {
@@ -53,7 +52,7 @@ export function callUnion(geojson_file_key1, geojson_file_key2) {
   // combines the geojson files into one, in case we have mulitple features in one of them.
   var unionLayer = {
     "type" : "FeatureCollection",
-    "features": [... selected_layer_geojson1.features, ... selected_layer_geojson2.features]
+    "features": [...selected_layer_geojson1.features, ...selected_layer_geojson2.features]
   }
 
   const union_layer_key = generateKey()
@@ -106,10 +105,77 @@ export function callIntersect(geojson_file_key1, geojson_file_key2) {
   createLayer('intersect '+selected_layer_name1+' & '+selected_layer_name2, intersect_layer_key, intersectLayer)
 }
 
+export function callDifference(geojson_file_key1, geojson_file_key2) {
+  /*NOTE: Difference also uses features (single Polygon or MultiPolygon), so we need to make sure all features are either a singe polygon
+    or a geojson file with a MultiPolygon geometry type.*/
+
+  // gets the data for the first geojson file stored in memory.
+  var layer_position1 = find_called_geojson(geojson_file_key1)
+  var selected_layer_geojson1 = collect_called_geojson(layer_position1)
+  var selected_layer_name1 = this.state.layer_list[layer_position1][0]
+  // gets the data for the second geojson file stored in memory.
+  var layer_position2 = find_called_geojson(geojson_file_key2)
+  var selected_layer_geojson2 = collect_called_geojson(layer_position2)
+  var selected_layer_name2 = this.state.layer_list[layer_position2][0]
+
+  // Takes the selected geojson files and converts them to MultiPolygon geometry.
+  var difference1 = geojsonPolygonToMultiPolygon(selected_layer_geojson1)
+  var difference2 = geojsonPolygonToMultiPolygon(selected_layer_geojson2)
+
+  // Runs the difference algorithm on the two multipolygon files.
+  var difference = turf.difference(difference1.features[0], difference2.features[0])
+
+  // Merges the difference layer into a new geojson file.
+  var differenceLayer_multipolygon = {"type":"FeatureCollection","features": [difference]};
+  var differenceLayer = geojsonMultiPolygonToPolygon(differenceLayer_multipolygon)
+
+  const difference_layer_key = generateKey()
+  get_newgeojson(differenceLayer, difference_layer_key)
+  createLayer(selected_layer_name1+' - '+selected_layer_name2, difference_layer_key, differenceLayer)
+
+}
+
+// Converts a geojson consisting with mulitple polygons into a geojson file with MultiPolygon geometry for difference function.
+export function geojsonPolygonToMultiPolygon(geojson) {
+  var geojson_features = geojson.features
+  var coordinates = []
+
+  for (var i = 0; i < geojson_features.length; i++) {
+      if(geojson_features[i].geometry.type == 'Polygon') {
+        coordinates.push(geojson_features[i].geometry.coordinates)
+      }
+  }
+  var new_geojson = {"type":"FeatureCollection","features":[{"type": "Feature", "properties": {},  "geometry": { "type": "MultiPolygon", "coordinates": coordinates }}]};
+  return new_geojson
+}
+
+/* Converts a geojson consisting of MultiPolygon to  a geojson file separate Polygons.
+Note: This function exists to revert geojson files back to single polygons, in order to:
+a) Keep the data consistent. b) Single polygons are required for some functions (e.g Dissolve) */
+export function geojsonMultiPolygonToPolygon(geojson) {
+  var geojson_features = geojson.features
+  var new_features = []
+
+  for (var i = 0; i < geojson_features.length; i++) {
+    console.log(geojson_features[i])
+    if(geojson_features[i].geometry.type == 'Polygon') {
+      new_features.push(geojson_features[i])
+    } else if(geojson_features[i].geometry.type == 'MultiPolygon') {
+      for (var j = 0; j < geojson_features[i].geometry.coordinates.length; j++) {
+        var feature = {"type": "Feature", "properties": {},  "geometry": { "type": "Polygon", "coordinates": geojson_features[i].geometry.coordinates[j] }}
+        new_features.push(feature)
+      }
+    }
+  }
+  var new_geojson = {"type":"FeatureCollection","features": new_features };
+  return new_geojson
+
+}
+
 export function deleteLayerCall(geojson_file_key) {
   var layer_position = find_called_geojson(geojson_file_key)
   var selected_layer_geojson = this.state.layer_list[layer_position][2]
-  // Removes the layer for the selected geojson file in sidebar.
+  // Removes the layer for the selected geojson file in sidebar and in the selection part of the Tools.
   $( "#"+geojson_file_key+"" ).remove();
   // Removes the geojson layers from the map.
   $( "."+geojson_file_key+"" ).remove();
@@ -167,6 +233,7 @@ class Sidebar extends Component {
     callDissolve = callDissolve.bind(this)
     callUnion = callUnion.bind(this)
     callIntersect = callIntersect.bind(this)
+    callDifference = callDifference.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)
@@ -200,10 +267,10 @@ class Sidebar extends Component {
                       Intersect
                   </li>
                   <li hidden className="intersect_content"><Intersect/></li>
-                  <li className="diffrence">
-                      Diffrence
+                  <li className="difference">
+                      Difference
                   </li>
-                  <li hidden className="diffrence_content"></li>
+                  <li hidden className="difference_content"><Difference/></li>
                   <li className="extract">
                       Extract Feature
                   </li>

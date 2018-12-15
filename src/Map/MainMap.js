@@ -30,6 +30,8 @@ config.tileLayer = {
 export function get_newgeojson(new_geojson, new_geojson_key) {
   var geojson = new_geojson
   var geojson_key = new_geojson_key
+  console.log("MAIN MAP GET NEW GEOJSON.")
+  console.log(geojson)
   this.setState({ geojson, geojson_key })
 }
 

@@ -44,8 +44,12 @@
     margin-bottom: 90px !important;
   }
 
-  .diffrence{
+  .difference{
     background-color: red;
+  }
+
+  .difference_content{
+    margin-bottom: 90px !important;
   }
 
   .extract {

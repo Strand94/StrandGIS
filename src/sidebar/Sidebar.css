@@ -4,6 +4,8 @@
     padding-top: 0;
   }
 
+.option {width: 100% !important;}
+
 #title {
     padding: 6px 8px 6px 16px;
     margin-top: -17px;

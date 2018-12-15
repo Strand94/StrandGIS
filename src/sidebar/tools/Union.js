@@ -25,7 +25,7 @@ class Union extends Component{
     for (var i = 0; i < layer_data_list.length; i++) {
       data.push({"name":layer_data_list[i][0],"key":layer_data_list[i][1]})
     }
-    const listItems = data.map((d) => <option value={d.key}>{d.name}</option>)
+    const listItems = data.map((d) => <option value={d.key}>{d.name.slice(0,30)}</option>)
 
     return(
       <div>

@@ -27,3 +27,7 @@ $( '.intersection' ).click(function() {
 $( '.union' ).click(function() {
   $('.union_content').toggle();
 });
+
+$( '.intersect' ).click(function() {
+  $('.intersect_content').toggle();
+});

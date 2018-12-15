@@ -4,6 +4,7 @@ import './Layers.css';
 import { new_geojsonToParent, getLayerList, deleteLayerCall } from './Sidebar.js'
 import { reorderLayers } from '../Map/MainMap'
 import { getLayerListUnion } from './tools/Union.js'
+import { getLayerListIntersect } from './tools/Intersect.js'
 import $ from "jquery";
 
 
@@ -23,6 +24,8 @@ class Layers extends Component{
     if (this.state.layer_list !== prevState.layer_list ){
       getLayerList(this.state.layer_list)
       getLayerListUnion(this.state.layer_list)
+      getLayerListIntersect(this.state.layer_list)
+
     }
 
     // Make all the new layers selectable and dragable.

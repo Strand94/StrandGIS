@@ -4,6 +4,7 @@ import "./Sidebar.css";
 import Buffer from './tools/Buffer';
 import Dissolve from './tools/Dissolve';
 import Union from './tools/Union';
+import Intersect from './tools/Intersect'
 import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
 import $ from "jquery";
@@ -59,6 +60,50 @@ export function callUnion(geojson_file_key1, geojson_file_key2) {
   get_newgeojson(unionLayer, union_layer_key)
   createLayer('union '+selected_layer_name1+' & '+selected_layer_name2, union_layer_key, unionLayer)
 
+}
+
+export function callIntersect(geojson_file_key1, geojson_file_key2) {
+  /*NOTE: Intersect also uses features, so we need to do a similar combination as with union. */
+
+  // gets the data for the first geojson file stored in memory.
+  var layer_position1 = find_called_geojson(geojson_file_key1)
+  var selected_layer_geojson1 = collect_called_geojson(layer_position1)
+  var selected_layer_name1 = this.state.layer_list[layer_position1][0]
+  // gets the data for the second geojson file stored in memory.
+  var layer_position2 = find_called_geojson(geojson_file_key2)
+  var selected_layer_geojson2 = collect_called_geojson(layer_position2)
+  var selected_layer_name2 = this.state.layer_list[layer_position2][0]
+
+  // Make a list of all the features in both Geojson files.
+  var f1 = selected_layer_geojson1.features
+  var f2 = selected_layer_geojson2.features
+
+
+  var conflictlist = [];
+
+  for (var i = 0; i < f1.length; i++) {
+      var parcel1 = f1[i];
+
+      for (var j = 0; j <f2.length; j++) {
+
+          var parcel2 = f2[j];
+
+              var conflict = turf.intersect(parcel1, parcel2);
+              if (conflict != null) {
+                  conflictlist.push(conflict);
+              }
+      }
+  }
+
+  var lg = new L.LayerGroup();
+  var intersectLayer = {"type":"FeatureCollection","features": conflictlist};
+
+  console.log(intersectLayer)
+  console.log(intersectLayer.features)
+
+  const intersect_layer_key = generateKey()
+  get_newgeojson(intersectLayer, intersect_layer_key)
+  createLayer('intersect '+selected_layer_name1+' & '+selected_layer_name2, intersect_layer_key, intersectLayer)
 }
 
 export function deleteLayerCall(geojson_file_key) {
@@ -121,6 +166,7 @@ class Sidebar extends Component {
     callBuffer = callBuffer.bind(this)
     callDissolve = callDissolve.bind(this)
     callUnion = callUnion.bind(this)
+    callIntersect = callIntersect.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)
@@ -150,10 +196,10 @@ class Sidebar extends Component {
                       Union
                   </li>
                   <li hidden className="union_content"><Union/></li>
-                  <li className="intersection">
-                      Intersection
+                  <li className="intersect">
+                      Intersect
                   </li>
-                  <li hidden className="intersection_content"></li>
+                  <li hidden className="intersect_content"><Intersect/></li>
                   <li className="diffrence">
                       Diffrence
                   </li>

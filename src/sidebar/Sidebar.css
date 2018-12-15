@@ -36,8 +36,12 @@
     margin-bottom: 90px !important;
   }
 
-  .intersection{
+  .intersect{
     background-color: green;
+  }
+
+  .intersect_content{
+    margin-bottom: 90px !important;
   }
 
   .diffrence{

@@ -73,8 +73,8 @@ class Layers extends Component{
 
   // Checks if upload GeoJSON button has been clicked, and file has been selected.
   activateFileUpload(){
+    console.log("Activate file upload call")
     document.getElementById('fileid').click();
-    document.getElementById('fileid').addEventListener('change', this.readGeoJSONFile, true);
   }
 
 // Sends call to Sidebar to delete selected layer, when delete button is clicked.
@@ -84,7 +84,7 @@ class Layers extends Component{
   }
 
  /*
-        TODO: ADD EXCEPTION HANDELING FOR FILE UPLOAD.
+        TODO: ADD EXCEPTION HANDELING FOR FILE UPLOAD?
  */
 
   // Adding file reading code in Layers as this is the only place it is used.

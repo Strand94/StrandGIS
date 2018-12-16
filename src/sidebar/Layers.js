@@ -112,11 +112,6 @@ class Layers extends Component{
     deleteLayerCall(delete_layer_key)
   }
 
-  // Code running when checkbox is clicked.
-  handleChangeChk(){
-    console.log("HandleClick")
-  }
-
   // Adding file reading code in Layers as this is the only place it is used.
   readGeoJSONFile(file_upload){
     //Retrieving the first (and only!) File from the FileList object
@@ -150,6 +145,8 @@ class Layers extends Component{
               console.log(new_geojson)
               var circle = turf.circle(geojson_features[i].geometry.coordinates, 0.0025)
               new_features.push(circle)
+            } else if(geojson_features[i].geometry.type == 'LineString') {
+              new_features.push(geojson_features[i])
             }
           }
           var clean_geojson = {"type":"FeatureCollection","features": new_features };

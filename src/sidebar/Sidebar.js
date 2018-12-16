@@ -18,24 +18,38 @@ export function callBuffer(buffer_radius, geojson_file_key) {
   var selected_layer_geojson = collect_called_geojson(layer_position)
   var selected_layer_name = this.state.layer_list[layer_position][0]
   var buffered = turf.buffer(selected_layer_geojson, buffer_radius, {units: 'meters'});
+
+  var buffer_dissolved = buffered.features[0]
+
+  for (var i = 1; i < buffered.features.length; i++) {
+    buffer_dissolved = turf.union(buffer_dissolved, buffered.features[i])
+  }
+
   const buffer_layer_key = generateKey()
-  get_newgeojson(buffered, buffer_layer_key)
-  createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffered)
+  get_newgeojson(buffer_dissolved, buffer_layer_key)
+  createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffer_dissolved)
 }
 
 // Gets call from Dissolve and sends data to MainMap and Layer
 export function callDissolve(geojson_file_key) {
+  /* The Turf.JS code for dissolve is not working as intended (said by author).
+  Therefore we use union instead, on all polygons within geojson file. */
   var layer_position = find_called_geojson(geojson_file_key)
   var selected_layer_geojson = collect_called_geojson(layer_position)
   var selected_layer_name = this.state.layer_list[layer_position][0]
-  var dissolved = turf.dissolve(selected_layer_geojson)
+
+  var dissolveLayer = selected_layer_geojson.features[0]
+
+  for (var i = 1; i < selected_layer_geojson.features.length; i++) {
+    dissolveLayer = turf.union(dissolveLayer, selected_layer_geojson.features[i])
+  }
+
   const dissolve_layer_key = generateKey()
-  get_newgeojson(dissolved, dissolve_layer_key)
-  createLayer(selected_layer_name+' dissolved', dissolve_layer_key, dissolved)
+  get_newgeojson(dissolveLayer, dissolve_layer_key)
+  createLayer(selected_layer_name+' dissolved', dissolve_layer_key, dissolveLayer)
 }
 
 // Gets call from Union and sends data to MainMap and Layer
-
 export function callUnion(geojson_file_key1, geojson_file_key2) {
   /*NOTE:  As the union function uses polygons not geojson files as input,
   we need to seperate the geojson files into features and merge all of them. */
@@ -194,7 +208,11 @@ function find_called_geojson(geojson_file_key){
 
 // Returns the geojson file, in a format suited for the operations.
 export function collect_called_geojson(geojson_file_position){
-  console.log(this.state.layer_list[geojson_file_position][2])
+  console.log(this.state.layer_list)
+  console.log(geojson_file_position)
+  console.log(this.state.layer_list[0])
+  console.log(this.state.layer_list[geojson_file_position])
+
   var geojson_file = this.state.layer_list[geojson_file_position][2]
   // If file is a FeatureCollection, we can simply return it.
   if (geojson_file.type == "FeatureCollection"){

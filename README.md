@@ -1,6 +1,6 @@
-# Project Title (TBA)
+# StrandGIS
 
-One Paragraph of project description goes here
+This is a school project, where the task is to make a representation of a GIS. I chose to make a web application in the React.js framework.
 
 ## Getting Started
 
@@ -50,6 +50,9 @@ This website will be deployed at all time on [Strand94.Github.io/TBA4251](https:
 * [Sortable.js](https://github.com/RubaXa/Sortable) - a JavaScript library for reorderable drag-and-drop lists.
 * [gh-pages](https://www.npmjs.com/package/gh-pages/) - Used to seamlessly deploy project using a simple commando.
 * [leaflet](https://leafletjs.com/download.html) -  JavaScript library for mobile-friendly interactive maps.
+* [Turf.js](http://turfjs.org/) -  Advanced geospatial analysis for browsers and Node.js
+
+
 
 ## Author
 

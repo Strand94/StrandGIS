@@ -131,7 +131,6 @@ class Layers extends Component{
           var new_features = []
 
           for (var i = 0; i < geojson_features.length; i++) {
-            console.log(geojson_features[i])
             if(geojson_features[i].geometry.type == 'Polygon') {
               new_features.push(geojson_features[i])
             }

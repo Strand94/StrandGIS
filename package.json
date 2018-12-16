@@ -2,7 +2,7 @@
   "name": "programming_in_geomatics",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://strand94.github.io/TBA4251/",
+  "homepage": "https://strand94.github.io/StrandGIS/",
   "dependencies": {
     "@turf/buffer": "^5.1.5",
     "@turf/collect": "^6.0.1",

@@ -38,7 +38,7 @@ npm start
 
 ## Deployment
 
-This website will be deployed at all time on [Strand94.Github.io/TBA4251](https://strand94.github.io/TBA4251)
+This website will be deployed at all time on [Strand94.Github.io/StrandGIS](https://strand94.github.io/StrandGIS)
 
 ## Built With
 
@@ -61,4 +61,3 @@ This website will be deployed at all time on [Strand94.Github.io/TBA4251](https:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-

@@ -25,9 +25,11 @@ export function callBuffer(buffer_radius, geojson_file_key) {
     buffer_dissolved = turf.union(buffer_dissolved, buffered.features[i])
   }
 
+  var final_buffer = {"type":"FeatureCollection","features": [buffer_dissolved]};
+
   const buffer_layer_key = generateKey()
-  get_newgeojson(buffer_dissolved, buffer_layer_key)
-  createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, buffer_dissolved)
+  get_newgeojson(final_buffer, buffer_layer_key)
+  createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, final_buffer)
 }
 
 // Gets call from Dissolve and sends data to MainMap and Layer
@@ -132,7 +134,11 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
   var selected_layer_geojson2 = collect_called_geojson(layer_position2)
   var selected_layer_name2 = this.state.layer_list[layer_position2][0]
 
+
   // Takes the selected geojson files and converts them to MultiPolygon geometry.
+  console.log(selected_layer_geojson1)
+  console.log(selected_layer_geojson2)
+
   var difference1 = geojsonPolygonToMultiPolygon(selected_layer_geojson1)
   var difference2 = geojsonPolygonToMultiPolygon(selected_layer_geojson2)
 
@@ -140,8 +146,13 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
   var difference = turf.difference(difference1.features[0], difference2.features[0])
 
   // Merges the difference layer into a new geojson file.
-  var differenceLayer_multipolygon = {"type":"FeatureCollection","features": [difference]};
-  var differenceLayer = geojsonMultiPolygonToPolygon(differenceLayer_multipolygon)
+  if (difference == null) {
+    difference = null
+  } else {
+    var differenceLayer_multipolygon = {"type":"FeatureCollection","features": [difference]};
+    var differenceLayer = geojsonMultiPolygonToPolygon(differenceLayer_multipolygon)
+  }
+
 
   const difference_layer_key = generateKey()
   get_newgeojson(differenceLayer, difference_layer_key)
@@ -152,11 +163,15 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
 // Converts a geojson consisting with mulitple polygons into a geojson file with MultiPolygon geometry for difference function.
 export function geojsonPolygonToMultiPolygon(geojson) {
   var geojson_features = geojson.features
+
   var coordinates = []
 
   for (var i = 0; i < geojson_features.length; i++) {
       if(geojson_features[i].geometry.type == 'Polygon') {
         coordinates.push(geojson_features[i].geometry.coordinates)
+      } else if(geojson_features[i].geometry.type == 'LineString') {
+        var feature = turf.buffer(geojson_features[i].geometry, 0.5)
+        coordinates.push(feature.geometry.coordinates)
       }
   }
   var new_geojson = {"type":"FeatureCollection","features":[{"type": "Feature", "properties": {},  "geometry": { "type": "MultiPolygon", "coordinates": coordinates }}]};
@@ -171,7 +186,6 @@ export function geojsonMultiPolygonToPolygon(geojson) {
   var new_features = []
 
   for (var i = 0; i < geojson_features.length; i++) {
-    console.log(geojson_features[i])
     if(geojson_features[i].geometry.type == 'Polygon') {
       new_features.push(geojson_features[i])
     } else if(geojson_features[i].geometry.type == 'MultiPolygon') {
@@ -208,16 +222,10 @@ function find_called_geojson(geojson_file_key){
 
 // Returns the geojson file, in a format suited for the operations.
 export function collect_called_geojson(geojson_file_position){
-  console.log(this.state.layer_list)
-  console.log(geojson_file_position)
-  console.log(this.state.layer_list[0])
-  console.log(this.state.layer_list[geojson_file_position])
-
   var geojson_file = this.state.layer_list[geojson_file_position][2]
   // If file is a FeatureCollection, we can simply return it.
-  if (geojson_file.type == "FeatureCollection"){
-    return geojson_file
-  }
+  return geojson_file
+
 
 }
 
@@ -274,7 +282,7 @@ class Sidebar extends Component {
     return ([
       <div id="sidebar_content">
           <div id="sidebar_title_div">
-              <h1 id="title">App name</h1>
+              <a href="http://www.anstra.no/" target="_blank" id="title">StrandGIS</a>
           </div>
           <div id="tools">
               <p id="subtitle">Tools</p>

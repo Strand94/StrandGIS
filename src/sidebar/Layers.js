@@ -8,6 +8,8 @@ import { getLayerListIntersect } from './tools/Intersect.js'
 import { getLayerListDifference } from './tools/Difference.js'
 import $ from "jquery";
 import FileSaver from 'file-saver';
+import ColorPicker from 'rc-color-picker';
+import 'rc-color-picker/assets/index.css';
 var turf = require('@turf/turf')
 
 
@@ -36,22 +38,41 @@ class Layers extends Component{
 
       // Sets a click listener for the newest layer's checkbox event.
       var id = this.state.layer_list[this.state.layer_list.length-1][1];
-      var element = document.getElementById('checkbox_'+id);
+      var hide_map_element = document.getElementById('checkbox_'+id);
+      var edit_layer_element = document.getElementById('customize_'+id);
 
-
-      element.addEventListener('click', function(event) {
+      // Adding hide/show when clicking checkbox on layer.
+      hide_map_element.addEventListener('click', function(event) {
         // adding stopPropagation so layer is not selected when checkbox is clicked.
         event.stopPropagation();
         // To check whether the checkbox is clicked or not.
-        var element = document.getElementById('checkbox_'+id);
+        var hide_map_element = document.getElementById('checkbox_'+id);
         // To get the correct layer on the map to hide.
         var map_element = document.getElementsByClassName("map-path "+id);
-        if (element.checked == true) {
+        if (hide_map_element.checked == true) {
           $(map_element).show();
         } else {
           $(map_element).hide();
         }
       });
+
+      edit_layer_element.addEventListener('click', function(event) {
+        // adding stopPropagation so layer is not selected when checkbox is clicked.
+        event.stopPropagation();
+        // To check whether the checkbox is clicked or not.
+        var edit_layer_element = document.getElementById('checkbox_'+id);
+        var hide_status = 'customizeDiv_'+id
+        var value = $('.'+hide_status).is(":visible");
+        console.log(value)
+        if (value) {
+          $('.'+hide_status).hide();
+        } else {
+          $('.'+hide_status).show();
+        }
+      });
+
+
+
     }
 
     // Make all the new layers selectable and dragable.
@@ -74,10 +95,21 @@ class Layers extends Component{
       data.push({"name":layer_data_list[i][0],"key":layer_data_list[i][1]})
     }
     const listItems = data.map((d) =>
-      <li className="layer" id={d.key}>
-        <input type="checkbox" defaultChecked={true} id={"checkbox_"+d.key} />
-        {d.name.slice(0,30)}
-      </li>
+      <div>
+        <li className="layer" id={d.key}>
+          <input type="checkbox" defaultChecked={true} id={"checkbox_"+d.key} />
+          <input className="customize" type="button" value="⚙️" id={"customize_"+d.key} />
+          {d.name.slice(0,30)}
+        </li>
+        <div className={"customizeDiv_"+d.key} hidden >
+          <div>
+            <input type="text" id={"name_"+d.key} />
+            <p>Customize Layer:</p>
+            <p>Fill</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeFill} alpha={50} value='aa'/>
+            <p>Stroke</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeStroke} alpha={50}/>
+          </div>
+        </div>
+      </div>
   )
 
     return(
@@ -172,6 +204,23 @@ class Layers extends Component{
 
 
   }
+}
+
+
+// Add the customization of Layer fill (inner) to ther map.
+function customizeFill(colors) {
+  var map_element = document.getElementsByClassName("map-path "+this.className);
+  console.log(map_element)
+  $(map_element).css("fill", colors.color);
+  $(map_element).css("fill-opacity", colors.alpha/100);
+}
+
+// Add the customization of Layer stroke (border) to ther map.
+function customizeStroke(colors) {
+  var map_element = document.getElementsByClassName("map-path "+this.className);
+  console.log(map_element)
+  $(map_element).css("stroke", colors.color);
+  $(map_element).css("stroke-opacity", colors.alpha/100);
 }
 
 // Function that creates a file for selected layer to download.

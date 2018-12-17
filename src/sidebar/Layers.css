@@ -16,8 +16,23 @@
 }
 
 #delete, #save {
-  font-size: 20px;
+  font-size: 25px;
+  background:none;
+  border:none;
+  margin:0;
+  padding:0;
+  cursor: pointer;
 }
+
+.customize {
+  font-size: 15px;
+  background:none;
+  border:none;
+  margin:0;
+  padding:0;
+  cursor: pointer;
+}
+
 
 #sortable_layers {
     color: white;

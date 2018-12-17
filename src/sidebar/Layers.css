@@ -1,9 +1,82 @@
+.dont-break-out {
+
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+
+}
+
+#container {
+    width: 165px;
+    margin: auto;
+}
+
+#fill {
+    width: 30px;
+    float: left;
+    height: auto;
+    margin-left: 45px;
+}
+
+#stroke {
+    width: 82px;
+    float: left;
+    height: auto;
+    margin-left: 5px;
+}
+
+#edit_text {
+  font-size: 10px;
+}
+.LayerData {
+  display: grid;
+  grid-template-columns: 5fr 1fr 1fr;
+  overflow-wrap: break-word;
+}
+
+.LayerName {
+  margin-top: 0px;
+  margin: 0;
+}
+
+.layer {
+  white-space: normal;
+  overflow: hidden;
+  background-color: #535353;
+  height: 30px;
+}
+
+.toggleShow {
+}
+
+.customize {
+  font-size: 15px;
+  background:none;
+  border:none;
+  margin:0;
+  padding:0;
+  cursor: pointer;
+}
+
 #subtitle {
     color:white;
     text-align: center;
     font-size: 20px;
     margin-bottom: 0;
     padding-bottom: 10px;
+    margin-top: 20px;
 }
 
 #sub_info {
@@ -24,14 +97,6 @@
   cursor: pointer;
 }
 
-.customize {
-  font-size: 15px;
-  background:none;
-  border:none;
-  margin:0;
-  padding:0;
-  cursor: pointer;
-}
 
 
 #sortable_layers {
@@ -46,7 +111,6 @@
     padding: 0.4em;
     padding-left: 0.4em;
     font-size: 1.4em;
-    height: 18px;
     cursor: move;
 }
 
@@ -55,9 +119,6 @@
     color: white;
 }
 
-.layer{
-    background-color: #535353;
-}
 
 .active{
     background-color: #6D7D92;

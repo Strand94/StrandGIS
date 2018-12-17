@@ -13,8 +13,6 @@ import 'rc-color-picker/assets/index.css';
 var turf = require('@turf/turf')
 
 
-
-
 // Class that handles layer logic and uploading of files.
 class Layers extends Component{
   constructor(props){
@@ -49,6 +47,7 @@ class Layers extends Component{
         var hide_map_element = document.getElementById('checkbox_'+id);
         // To get the correct layer on the map to hide.
         var map_element = document.getElementsByClassName("map-path "+id);
+
         if (hide_map_element.checked == true) {
           $(map_element).show();
         } else {
@@ -60,18 +59,20 @@ class Layers extends Component{
         // adding stopPropagation so layer is not selected when checkbox is clicked.
         event.stopPropagation();
         // To check whether the checkbox is clicked or not.
-        var edit_layer_element = document.getElementById('checkbox_'+id);
+        var edit_layer_element = document.getElementById('customize_'+id);
         var hide_status = 'customizeDiv_'+id
         var value = $('.'+hide_status).is(":visible");
-        console.log(value)
+        var list_element = document.getElementsByClassName("layer "+id);
+
         if (value) {
           $('.'+hide_status).hide();
+          $(list_element).css("height", "65px");
         } else {
           $('.'+hide_status).show();
+          $(list_element).css("height", "200px");
+
         }
       });
-
-
 
     }
 
@@ -95,44 +96,55 @@ class Layers extends Component{
       data.push({"name":layer_data_list[i][0],"key":layer_data_list[i][1]})
     }
     const listItems = data.map((d) =>
-      <div>
-        <li className="layer" id={d.key}>
-          <input type="checkbox" defaultChecked={true} id={"checkbox_"+d.key} />
-          <input className="customize" type="button" value="⚙️" id={"customize_"+d.key} />
-          {d.name.slice(0,30)}
-        </li>
-        <div className={"customizeDiv_"+d.key} hidden >
-          <div>
-            <input type="text" id={"name_"+d.key} />
-            <p>Customize Layer:</p>
-            <p>Fill</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeFill} alpha={50} value='aa'/>
-            <p>Stroke</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeStroke} alpha={50}/>
+      <li className={"layer "+d.key} id={d.key}>
+        <div className="LayerContainer">
+          <div className="LayerData">
+          <p className="LayerName dont-break-out" id={"name_"+d.key}>
+            {d.name.slice(0,30)}
+          </p>
+            <input className="toggleShow" type="checkbox" defaultChecked={true} id={"checkbox_"+d.key} />
+            <input className="customize" type="button" value="⚙️" id={"customize_"+d.key} />
+
+          </div>
+          <div className={"customizeDiv_"+d.key} hidden >
+            <div>
+              <p id={"edit_text"}>Change name:</p>
+              <input type="text" onChange={changeName} id={"change_name_"+d.key} />
+              <p id={"edit_text"}>Change colors:</p>
+              <div id="container">
+                <div id="fill">
+                  <p>Fill</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeFill} alpha={50}/>
+                </div>
+                <div id="stroke">
+                  <p>Stroke</p><ColorPicker className={d.key} color={'#0ad'} onChange={customizeStroke} alpha={50}/>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-  )
+      </li>
+    )
 
     return(
       <div id="layers">
-          <p id="subtitle">Layers</p>
-          <button id="delete" onClick={(param) => this.deleteLayer(param)}>🗑️</button>
-          <button id="save" onClick={(param) => download(param)}>💾</button>
-          <p id='sub_info'>Click to select, drag to reorder.</p>
+        <p id="subtitle">Layers</p>
+        <button id="delete" onClick={(param) => this.deleteLayer(param)}>🗑️</button>
+        <button id="save" onClick={(param) => download(param)}>💾</button>
+        <p id='sub_info'>Click to select, drag to reorder.</p>
+        <div>
+          <ul id="sortable_layers" className="ui-sortable">
+            {listItems}
+          </ul>
+        </div>
+        <div>
+          <p id="subtitle">Add Layer</p>
           <div>
-              <ul id="sortable_layers" className="ui-sortable">
-                  {listItems}
-              </ul>
+            {/* Hidden input field to handle file upload on button click. */}
+            <input id='fileid' type='file' onChange={(param) => this.readGeoJSONFile(param)} accept=".GeoJSON,.JSON" hidden/>
+            <button id="upload" onClick={(param) => this.activateFileUpload(param)}>Upload file</button>
           </div>
-          <div>
-            <p id="subtitle">Add Layer</p>
-            <div>
-              {/* Hidden input field to handle file upload on button click. */}
-              <input id='fileid' type='file' onChange={(param) => this.readGeoJSONFile(param)} accept=".GeoJSON,.JSON" hidden/>
-              <button id="upload" onClick={(param) => this.activateFileUpload(param)}>Upload file</button>
-            </div>
-            <p id='sub_info'>Click button and upload GeoJSON or JSON file.</p>
-
-          </div>
+          <p id='sub_info'>Click button and upload GeoJSON or JSON file.</p>
+        </div>
       </div>
     )
   }
@@ -177,7 +189,6 @@ class Layers extends Component{
               }
             }
             else if(geojson_features[i].geometry.type == 'Point') {
-              console.log(new_geojson)
               var circle = turf.circle(geojson_features[i].geometry.coordinates, 0.0025)
               new_features.push(circle)
             } else if(geojson_features[i].geometry.type == 'LineString') {
@@ -202,10 +213,17 @@ class Layers extends Component{
       alert("Failed to load file");
     }
 
-
   }
 }
 
+
+// Call to change layer name.
+export function changeName() {
+  console.log(this)
+  var name_element = document.getElementById("name_");
+  var input_element = $('#change_name_').val();
+  $(name_element).text(input_element);
+}
 
 // Add the customization of Layer fill (inner) to ther map.
 function customizeFill(colors) {
@@ -231,14 +249,10 @@ export function download(geojson_key) {
       var layer_position = i
     }
   }
-
   var geojson_file = this.state.layer_list[layer_position][2]
   var geojson_file_name = this.state.layer_list[layer_position][0]
   var filename = geojson_file_name.split(' ').join('_');
   var filename = filename.replace('.geojson', '');
-
-  console.log(geojson_file_name+" | "+filename)
-
 
   var blob = new Blob([JSON.stringify(geojson_file)], {type: "geojson;charset=utf-8"});
   FileSaver.saveAs(blob, filename+".geojson");

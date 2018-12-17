@@ -216,6 +216,8 @@ export function deleteLayerCall(geojson_file_key) {
   var selected_layer_geojson = this.state.layer_list[layer_position][2]
   // Removes the layer for the selected geojson file in sidebar and in the selection part of the Tools.
   $( "#"+geojson_file_key+"" ).remove();
+  $( "#layer_"+geojson_file_key+"" ).remove();
+
   // Removes the geojson layers from the map.
   $( "."+geojson_file_key+"" ).remove();
 

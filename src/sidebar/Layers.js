@@ -18,11 +18,13 @@ class Layers extends Component{
   constructor(props){
     super(props)
     this.state = {
-      layer_list: []
+      layer_list: [],
+      name_list: []
     }
     this.readGeoJSONFile = this.readGeoJSONFile.bind(this);
     download = download.bind(this)
     createLayer = createLayer.bind(this);
+    changeName = changeName.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -109,7 +111,7 @@ class Layers extends Component{
           <div className={"customizeDiv_"+d.key} hidden >
             <div>
               <p id={"edit_text"}>Change name:</p>
-              <input type="text" onChange={changeName} id={"change_name_"+d.key} />
+              <input type="text" value={d.name} onChange={(param) => changeName(d.key)} id={"change_name_"+d.key} />
               <p id={"edit_text"}>Change colors:</p>
               <div id="container">
                 <div id="fill">
@@ -218,11 +220,24 @@ class Layers extends Component{
 
 
 // Call to change layer name.
-export function changeName() {
-  console.log(this)
-  var name_element = document.getElementById("name_");
-  var input_element = $('#change_name_').val();
-  $(name_element).text(input_element);
+export function changeName(id) {
+  console.log("called: "+id)
+  var input_element = $('#change_name_'+id).val();
+  console.log(input_element)
+  if (input_element == undefined) {
+    console.log("Sdkipping changeName")
+  } else {
+
+    for (var i = 0; i < this.state.layer_list.length; i++) {
+      if (id == this.state.layer_list[i][1]){
+        var position = i
+      }
+    }
+
+    var layers = [...this.state.layer_list]
+    layers[position][0] = input_element
+    this.setState( {layers} )
+  }
 }
 
 // Add the customization of Layer fill (inner) to ther map.

@@ -19,13 +19,19 @@ export function callBuffer(buffer_radius, geojson_file_key) {
   var selected_layer_name = this.state.layer_list[layer_position][0]
   var buffered = turf.buffer(selected_layer_geojson, buffer_radius, {units: 'meters'});
 
+  // Runs dissolve on the buffer, so we don't get overlapping buffer zones.
   var buffer_dissolved = buffered.features[0]
-
   for (var i = 1; i < buffered.features.length; i++) {
     buffer_dissolved = turf.union(buffer_dissolved, buffered.features[i])
   }
 
-  var final_buffer = {"type":"FeatureCollection","features": [buffer_dissolved]};
+  // Cleans the returned dissolve data.
+  if (buffer_dissolved.geometry.type == 'MultiPolygon') {
+    var multipolygon = {"type":"FeatureCollection","features": [buffer_dissolved]};
+    final_buffer = geojsonMultiPolygonToPolygon(multipolygon)
+  } else {
+    var final_buffer = {"type":"FeatureCollection","features": [buffer_dissolved]};
+  }
 
   const buffer_layer_key = generateKey()
   get_newgeojson(final_buffer, buffer_layer_key)
@@ -113,9 +119,6 @@ export function callIntersect(geojson_file_key1, geojson_file_key2) {
   var lg = new L.LayerGroup();
   var intersectLayer = {"type":"FeatureCollection","features": conflictlist};
 
-  console.log(intersectLayer)
-  console.log(intersectLayer.features)
-
   const intersect_layer_key = generateKey()
   get_newgeojson(intersectLayer, intersect_layer_key)
   createLayer('intersect '+selected_layer_name1+' & '+selected_layer_name2, intersect_layer_key, intersectLayer)
@@ -134,19 +137,19 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
   var selected_layer_geojson2 = collect_called_geojson(layer_position2)
   var selected_layer_name2 = this.state.layer_list[layer_position2][0]
 
+  console.log("geo1")
+  console.log(selected_layer_geojson1)
+  console.log("geo2")
+  console.log(selected_layer_geojson2)
+
 
   // Takes the selected geojson files and converts them to MultiPolygon geometry.
-
   var difference1 = geojsonPolygonToMultiPolygon(selected_layer_geojson1)
   var difference2 = geojsonPolygonToMultiPolygon(selected_layer_geojson2)
-
-  console.log(difference1)
-  console.log(difference2)
 
   // Runs the difference algorithm on the two multipolygon files.
   var difference = turf.difference(difference1.features[0], difference2.features[0])
 
-  console.log(difference)
 
   // Merges the difference layer into a new geojson file.
   if (difference == null) {
@@ -175,6 +178,11 @@ export function geojsonPolygonToMultiPolygon(geojson) {
       } else if(geojson_features[i].geometry.type == 'LineString') {
         var feature = turf.buffer(geojson_features[i].geometry, 0.5)
         coordinates.push(feature.geometry.coordinates)
+      } else if (geojson_features[i].geometry.type == 'MultiPolygon'){
+        coordinates.push(geojson_features[i].geometry.coordinates)
+      } else if(geojson_features[i].geometry.type == 'Point') {
+        var feature = turf.buffer(geojson_features[i].geometry, 0.5)
+        coordinates.push(feature.geometry.coordinates)
       }
   }
   var new_geojson = {"type":"FeatureCollection","features":[{"type": "Feature", "properties": {},  "geometry": { "type": "MultiPolygon", "coordinates": coordinates }}]};
@@ -186,8 +194,8 @@ Note: This function exists to revert geojson files back to single polygons, in o
 a) Keep the data consistent. b) Single polygons are required for some functions (e.g Dissolve) */
 export function geojsonMultiPolygonToPolygon(geojson) {
   var geojson_features = geojson.features
-  var new_features = []
 
+  var new_features = []
   for (var i = 0; i < geojson_features.length; i++) {
     if(geojson_features[i].geometry.type == 'Polygon') {
       new_features.push(geojson_features[i])

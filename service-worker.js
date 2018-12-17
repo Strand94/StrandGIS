@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/StrandGIS/precache-manifest.7767b7529cb8560928e9aecee31bc0dc.js"
+  "/StrandGIS/precache-manifest.72d37923940bbe547a7f46f32afa06da.js"
 );
 
 workbox.clientsClaim();

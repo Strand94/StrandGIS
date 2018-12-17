@@ -52,9 +52,17 @@ export function callDissolve(geojson_file_key) {
     dissolveLayer = turf.union(dissolveLayer, selected_layer_geojson.features[i])
   }
 
+  // Cleans the returned dissolve data.
+  if (dissolveLayer.geometry.type == 'MultiPolygon') {
+    var multipolygon = {"type":"FeatureCollection","features": [dissolveLayer]};
+    final_dissolve = geojsonMultiPolygonToPolygon(multipolygon)
+  } else {
+    var final_dissolve = {"type":"FeatureCollection","features": [dissolveLayer]};
+  }
+
   const dissolve_layer_key = generateKey()
-  get_newgeojson(dissolveLayer, dissolve_layer_key)
-  createLayer(selected_layer_name+' dissolved', dissolve_layer_key, dissolveLayer)
+  get_newgeojson(final_dissolve, dissolve_layer_key)
+  createLayer(selected_layer_name+' dissolved', dissolve_layer_key, final_dissolve)
 }
 
 // Gets call from Union and sends data to MainMap and Layer

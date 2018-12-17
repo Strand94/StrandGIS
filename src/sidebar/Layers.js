@@ -296,6 +296,7 @@ export function createLayer(newest_file_name, newest_file_key, new_geojson){
   })
 }
 
+// Adds sortable and selectable options to layers.
 function addLayerProperties() {
   // Gets the class name for the layer list.
   var layer_list = document.getElementById("sortable_layers");
@@ -311,6 +312,9 @@ function addLayerProperties() {
           this.className += " active";
       });
   }
+  reorderLayers(getLayers())
+
+
 
   // Makes the sidebar layer list sortable
   Sortable.create(layer_list,{
@@ -321,16 +325,17 @@ function addLayerProperties() {
   })
 
   // Function that returns all layers (and their order.)
-  function getLayers(){
-      var i;
-      var list_order = [];
-      var a = document.getElementsByClassName("layer")
-      for (i=0; i < a.length; i++){
-          var class_name = ((a[i].className).split(" "))
-          list_order.push(class_name[0])
-      }
-      return list_order;
+function getLayers(){
+  var i;
+  var list_order = [];
+  var a = document.getElementsByClassName("layer")
+  for (i=0; i < a.length; i++){
+      var class_name = ((a[i].className).split(" "))
+      list_order.push(class_name[1])
   }
+  return list_order;
+}
+
 }
 
 export default Layers;

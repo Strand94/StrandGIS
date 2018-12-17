@@ -140,10 +140,12 @@ class MainMap extends Component {
 }
 
 export function reorderLayers(layers) {
+  console.log(layers)
   var i;
   var g = document.getElementsByTagName("g");
   for (i=layers.length; i > -1; i--){
-    var map_layer = document.getElementsByClassName(layers[i]+" leaflet-interactive")[0]
+    var map_layer = document.getElementsByClassName(layers[i]+" leaflet-interactive")
+    console.log(layers[i])
     $(map_layer).appendTo(g);
   }
 }

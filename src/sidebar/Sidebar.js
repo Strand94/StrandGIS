@@ -136,14 +136,17 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
 
 
   // Takes the selected geojson files and converts them to MultiPolygon geometry.
-  console.log(selected_layer_geojson1)
-  console.log(selected_layer_geojson2)
 
   var difference1 = geojsonPolygonToMultiPolygon(selected_layer_geojson1)
   var difference2 = geojsonPolygonToMultiPolygon(selected_layer_geojson2)
 
+  console.log(difference1)
+  console.log(difference2)
+
   // Runs the difference algorithm on the two multipolygon files.
   var difference = turf.difference(difference1.features[0], difference2.features[0])
+
+  console.log(difference)
 
   // Merges the difference layer into a new geojson file.
   if (difference == null) {

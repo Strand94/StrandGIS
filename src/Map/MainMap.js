@@ -144,7 +144,6 @@ export function reorderLayers(layers) {
   var g = document.getElementsByTagName("g");
   for (i=layers.length; i > -1; i--){
     var map_layer = document.getElementsByClassName(layers[i]+" leaflet-interactive")[0]
-    console.log(map_layer)
     $(map_layer).appendTo(g);
   }
 }

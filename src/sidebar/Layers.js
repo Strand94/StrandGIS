@@ -7,7 +7,9 @@ import { getLayerListUnion } from './tools/Union.js'
 import { getLayerListIntersect } from './tools/Intersect.js'
 import { getLayerListDifference } from './tools/Difference.js'
 import $ from "jquery";
+import FileSaver from 'file-saver';
 var turf = require('@turf/turf')
+
 
 
 
@@ -19,6 +21,7 @@ class Layers extends Component{
       layer_list: []
     }
     this.readGeoJSONFile = this.readGeoJSONFile.bind(this);
+    download = download.bind(this)
     createLayer = createLayer.bind(this);
   }
 
@@ -81,6 +84,7 @@ class Layers extends Component{
       <div id="layers">
           <p id="subtitle">Layers</p>
           <button id="delete" onClick={(param) => this.deleteLayer(param)}>🗑️</button>
+          <button id="save" onClick={(param) => download(param)}>💾</button>
           <p id='sub_info'>Click to select, drag to reorder.</p>
           <div>
               <ul id="sortable_layers" className="ui-sortable">
@@ -168,6 +172,27 @@ class Layers extends Component{
 
 
   }
+}
+
+// Function that creates a file for selected layer to download.
+export function download(geojson_key) {
+  var download_layer_key= ($('li.active').attr('id'));
+  for (var i = 0; i < this.state.layer_list.length; i++) {
+    if (download_layer_key == this.state.layer_list[i][1]){
+      var layer_position = i
+    }
+  }
+
+  var geojson_file = this.state.layer_list[layer_position][2]
+  var geojson_file_name = this.state.layer_list[layer_position][0]
+  var filename = geojson_file_name.split(' ').join('_');
+  var filename = filename.replace('.geojson', '');
+
+  console.log(geojson_file_name+" | "+filename)
+
+
+  var blob = new Blob([JSON.stringify(geojson_file)], {type: "geojson;charset=utf-8"});
+  FileSaver.saveAs(blob, filename+".geojson");
 }
 
 // Function that takes in all kinds of GeoJSON/JSON map data and cleans it.

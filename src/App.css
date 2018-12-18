@@ -14,3 +14,23 @@
   overflow-x: hidden;
   padding-top: 20px;
 }
+
+#mapUI {
+  position: relative;
+  z-index: 1;
+
+}
+
+#extract_feature_window {
+  float: right;
+  margin-right: 165px;
+  width: 30vw;
+  height: 20vh;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  position:fixed;
+  background-color: #222222;
+  color: white;
+  overflow-y: auto;
+}

@@ -1,0 +1,6 @@
+.extract_feature_rules {
+    height: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: green;
+}

@@ -7,6 +7,7 @@ import Union from './tools/Union';
 import Intersect from './tools/Intersect';
 import Difference from './tools/Difference';
 import Extract_Feature from './tools/Extract_Feature'
+import { getPropertiesList } from './ExtractFeatureWindow'
 import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
 import $ from "jquery";
@@ -169,14 +170,38 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
 
 }
 
-export function callExtract(geojson_file_key) {
+// Getting the properties for selected GeoJSON file.
+export function getProperties(geojson_file_key) {
   // gets the data for the geojson file stored in memory.
   var layer_position = find_called_geojson(geojson_file_key)
   var selected_layer_geojson = collect_called_geojson(layer_position)
   var selected_layer_name = this.state.layer_list[layer_position][0]
 
-  console.log(selected_layer_geojson)
+  var properties = []
+  var valuearray = []
+  // Getting all unique properties and their values.
+  for (var i = 0; i < selected_layer_geojson.features.length; i++ ){
+    for (var property in selected_layer_geojson.features[i].properties){
+      if(selected_layer_geojson.features[i].properties.hasOwnProperty(property)) {
+       var value = selected_layer_geojson.features[i].properties[property]
+      }
+      if(properties.indexOf(property) === -1) {
+        properties.push(property)
+        valuearray.push([value])
+      } else {
+        if(valuearray[properties.indexOf(property)].indexOf(value) === -1){
+          valuearray[properties.indexOf(property)].push(value)
+        }
+      }
+    }
+  }
+  // Combining the arrays, so we get data sorted in a neat matter.
+  var property_data = []
+  for (var i = 0; i < properties.length; i++ ){
+    property_data.push([properties[i], valuearray[i]])
+  }
 
+  getPropertiesList(property_data, selected_layer_name)
 }
 
 // Converts a geojson consisting with mulitple polygons into a geojson file with MultiPolygon geometry for difference function.
@@ -296,7 +321,7 @@ class Sidebar extends Component {
     callUnion = callUnion.bind(this)
     callIntersect = callIntersect.bind(this)
     callDifference = callDifference.bind(this)
-    callExtract = callExtract.bind(this)
+    getProperties = getProperties.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)

@@ -104,9 +104,9 @@ class Layers extends Component{
       <li className={"layer "+d.key} id={d.key}>
         <div className="LayerContainer">
           <div className="LayerData">
-          <p className="LayerName dont-break-out" id={"name_"+d.key}>
-            {d.name.slice(0,30)}
-          </p>
+            <p className="LayerName dont-break-out" id={"name_"+d.key}>
+              {d.name.slice(0,30)}
+            </p>
             <input className="toggleShow" type="checkbox" defaultChecked={true} id={"checkbox_"+d.key} />
             <input className="customize" type="button" value="⚙️" id={"customize_"+d.key} />
 

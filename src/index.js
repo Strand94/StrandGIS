@@ -35,3 +35,7 @@ $( '.intersect' ).click(function() {
 $( '.difference' ).click(function() {
   $('.difference_content').toggle();
 });
+
+$( '.extract' ).click(function() {
+  $('.extract_content').toggle();
+});

@@ -19,16 +19,18 @@ class Layers extends Component{
     super(props)
     this.state = {
       layer_list: [],
-      name_list: []
+      selected_layer: null,
     }
     this.readGeoJSONFile = this.readGeoJSONFile.bind(this);
     download = download.bind(this)
     createLayer = createLayer.bind(this);
     changeName = changeName.bind(this);
+    updateSelected = updateSelected.bind(this);
+    this.disableInvalidButtons = this.disableInvalidButtons.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
-
+    this.disableInvalidButtons()
     // Appending new file name to Layer list with a unique key value.
     if (this.state.layer_list !== prevState.layer_list ){
       getLayerList(this.state.layer_list)
@@ -87,6 +89,7 @@ class Layers extends Component{
   componentDidMount() {
     // Make the initial layers selectable and dragable.
     addLayerProperties()
+    this.disableInvalidButtons()
 
   }
 
@@ -150,6 +153,23 @@ class Layers extends Component{
       </div>
     )
   }
+  // Makes buttons unclickable if no layer is selected.
+  disableInvalidButtons() {
+    if (this.state.selected_layer == null) {
+       $('#delete').prop('disabled', true);
+       $('#delete').css( 'cursor', 'not-allowed' );
+       $('#save').prop('disabled', true);
+       $('#save').css( 'cursor', 'not-allowed' );
+
+    } else {
+      $('#delete').prop('disabled', false);
+      $('#delete').css( 'cursor', 'pointer' );
+      $('#save').prop('disabled', false);
+      $('#save').css( 'cursor', 'pointer' );
+
+    }
+
+  }
 
   // Checks if upload GeoJSON button has been clicked, and file has been selected.
   activateFileUpload(){
@@ -160,6 +180,10 @@ class Layers extends Component{
   deleteLayer(){
     var delete_layer_key= ($('li.active').attr('id'));
     deleteLayerCall(delete_layer_key)
+    this.setState({
+      selected_layer: null
+    })
+
   }
 
   // Adding file reading code in Layers as this is the only place it is used.
@@ -187,11 +211,13 @@ class Layers extends Component{
             else if(geojson_features[i].geometry.type == 'MultiPolygon') {
               for (var j = 0; j < geojson_features[i].geometry.coordinates.length; j++) {
                 var feature = {"type": "Feature", "properties": {},  "geometry": { "type": "Polygon", "coordinates": geojson_features[i].geometry.coordinates[j] }}
+                feature.properties = geojson_features[i].properties
                 new_features.push(feature)
               }
             }
             else if(geojson_features[i].geometry.type == 'Point') {
               var circle = turf.circle(geojson_features[i].geometry.coordinates, 0.0025)
+              circle.properties = geojson_features[i].properties
               new_features.push(circle)
             } else if(geojson_features[i].geometry.type == 'LineString') {
               new_features.push(geojson_features[i])
@@ -203,7 +229,6 @@ class Layers extends Component{
         } else {
           var clean_geojson = clean_data(new_geojson)
         }
-
         // Sending the JSON extracted from file to Parent component.
         new_geojsonToParent(clean_geojson, newest_file_key)
         createLayer(newest_file_name, newest_file_key, clean_geojson)
@@ -221,11 +246,8 @@ class Layers extends Component{
 
 // Call to change layer name.
 export function changeName(id) {
-  console.log("called: "+id)
   var input_element = $('#change_name_'+id).val();
-  console.log(input_element)
   if (input_element == undefined) {
-    console.log("Sdkipping changeName")
   } else {
 
     for (var i = 0; i < this.state.layer_list.length; i++) {
@@ -243,15 +265,14 @@ export function changeName(id) {
 // Add the customization of Layer fill (inner) to ther map.
 function customizeFill(colors) {
   var map_element = document.getElementsByClassName("map-path "+this.className);
-  console.log(map_element)
   $(map_element).css("fill", colors.color);
   $(map_element).css("fill-opacity", colors.alpha/100);
 }
 
+
 // Add the customization of Layer stroke (border) to ther map.
 function customizeStroke(colors) {
   var map_element = document.getElementsByClassName("map-path "+this.className);
-  console.log(map_element)
   $(map_element).css("stroke", colors.color);
   $(map_element).css("stroke-opacity", colors.alpha/100);
 }
@@ -296,6 +317,20 @@ export function createLayer(newest_file_name, newest_file_key, new_geojson){
   })
 }
 
+// helper function that returns selected layer.
+export function updateSelected(){
+  var selected_key= ($('li.active').attr('id'));
+  for (var i = 0; i < this.state.layer_list.length; i++) {
+    if (selected_key == this.state.layer_list[i][1]){
+      var layer_position = i
+    }
+  }
+  var geojson_file_name = this.state.layer_list[layer_position][0]
+  this.setState({
+    selected_layer: geojson_file_name
+  })
+}
+
 // Adds sortable and selectable options to layers.
 function addLayerProperties() {
   // Gets the class name for the layer list.
@@ -310,8 +345,11 @@ function addLayerProperties() {
           current[0].className = current[0].className.replace(" active", "");
           }
           this.className += " active";
+          updateSelected()
+
       });
   }
+
   reorderLayers(getLayers())
 
 

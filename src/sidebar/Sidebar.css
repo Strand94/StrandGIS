@@ -21,11 +21,15 @@
   }
 
   .buffer_content{
-    margin-bottom: 55px !important;
+    margin-bottom: 120px !important;
   }
 
   .dissolve{
     background-color: #e0b84b;
+  }
+
+  .dissolve_content{
+    margin-bottom: 70px !important;
   }
 
   .union{
@@ -33,7 +37,7 @@
   }
 
   .union_content{
-    margin-bottom: 90px !important;
+    margin-bottom: 120px !important;
   }
 
   .intersect{
@@ -41,7 +45,7 @@
   }
 
   .intersect_content{
-    margin-bottom: 90px !important;
+    margin-bottom: 135px !important;
   }
 
   .difference{
@@ -49,12 +53,16 @@
   }
 
   .difference_content{
-    margin-bottom: 90px !important;
+    margin-bottom: 135px !important;
   }
 
   .extract {
     color: black;
     background-color: white;
+  }
+
+  .extract_content {
+    margin-bottom: 120px !important;
   }
 
 

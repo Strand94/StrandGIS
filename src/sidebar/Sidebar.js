@@ -6,6 +6,7 @@ import Dissolve from './tools/Dissolve';
 import Union from './tools/Union';
 import Intersect from './tools/Intersect';
 import Difference from './tools/Difference';
+import Extract_Feature from './tools/Extract_Feature'
 import { get_newgeojson } from '../Map/MainMap'
 import { createLayer } from './Layers'
 import $ from "jquery";
@@ -145,12 +146,6 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
   var selected_layer_geojson2 = collect_called_geojson(layer_position2)
   var selected_layer_name2 = this.state.layer_list[layer_position2][0]
 
-  console.log("geo1")
-  console.log(selected_layer_geojson1)
-  console.log("geo2")
-  console.log(selected_layer_geojson2)
-
-
   // Takes the selected geojson files and converts them to MultiPolygon geometry.
   var difference1 = geojsonPolygonToMultiPolygon(selected_layer_geojson1)
   var difference2 = geojsonPolygonToMultiPolygon(selected_layer_geojson2)
@@ -171,6 +166,16 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
   const difference_layer_key = generateKey()
   get_newgeojson(differenceLayer, difference_layer_key)
   createLayer(selected_layer_name1+' - '+selected_layer_name2, difference_layer_key, differenceLayer)
+
+}
+
+export function callExtract(geojson_file_key) {
+  // gets the data for the geojson file stored in memory.
+  var layer_position = find_called_geojson(geojson_file_key)
+  var selected_layer_geojson = collect_called_geojson(layer_position)
+  var selected_layer_name = this.state.layer_list[layer_position][0]
+
+  console.log(selected_layer_geojson)
 
 }
 
@@ -291,6 +296,7 @@ class Sidebar extends Component {
     callUnion = callUnion.bind(this)
     callIntersect = callIntersect.bind(this)
     callDifference = callDifference.bind(this)
+    callExtract = callExtract.bind(this)
     new_geojsonToParent = new_geojsonToParent.bind(this)
     getLayerList = getLayerList.bind(this)
     find_called_geojson = find_called_geojson.bind(this)
@@ -331,7 +337,7 @@ class Sidebar extends Component {
                   <li className="extract">
                       Extract Feature
                   </li>
-                  <li hidden className="extract_content"></li>
+                  <li hidden className="extract_content"><Extract_Feature/></li>
               </ul>
           </div>
           <div id='Layers'>

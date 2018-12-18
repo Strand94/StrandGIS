@@ -8,12 +8,13 @@ class Dissolve extends Component{
     render(){
         return(
         <div>
-           <button onClick={(param) => this.executeDissolve(param)}>Apply</button>
+          <p>Select layer by clicking on it.</p>
+          <button onClick={(param) => this.executeDissolve(param)}>Apply</button>
         </div>
         )
     }
 
-    // Sends call to Sidebar to run Buffer code.
+    // Sends call to Sidebar to run Dissolve code.
     executeDissolve(){
       var layer_key= ($('li.active').attr('id'));
       callDissolve(layer_key)

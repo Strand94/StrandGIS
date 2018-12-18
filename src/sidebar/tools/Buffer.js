@@ -3,10 +3,8 @@ import "./Buffer.css"
 import MainMap from '../../Map/MainMap'
 import L from 'leaflet'
 import { callBuffer } from '../Sidebar.js'
-import geojson from '../../geojson/sor_trondelag.json';
 import $ from "jquery";
-var buffer = require('@turf/buffer')
-var turf = require('@turf/turf')
+
 
 
 class Buffer extends Component{
@@ -16,10 +14,11 @@ class Buffer extends Component{
     render(){
         return(
         <div>
-           <div id="tool_title">Distance:</div>
-           <input id="buffer_number" type="number" placeholder="Buffer in meters"></input>
-           <br></br>
-           <button onClick={(param) => this.executeBuffer(param)}>Apply</button>
+            <p>Select layer by clicking on it.</p>
+            <div id="tool_title">Distance: [meters]</div>
+            <input id="buffer_number" type="number" placeholder="Buffer in meters"></input>
+            <br></br>
+            <button onClick={(param) => this.executeBuffer(param)}>Apply</button>
         </div>
         )
     }

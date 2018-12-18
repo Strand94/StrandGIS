@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import "./ExtractFeatureWindow.css"
+import { callExtract } from "./Sidebar"
 import $ from "jquery";
 
 
 // Fetches properties from layers, in order to get selected data.
-export function getPropertiesList(properties_list, layerName) {
-  this.setState({ properties_list, layerName })
+export function getPropertiesList(properties_list, layerName, layerKey) {
+  this.setState({ properties_list, layerName, layerKey })
 }
 
 
@@ -14,21 +15,56 @@ class ExtractFeatureWindow extends Component{
     super(props)
     this.state = {
       properties_list: [],
-      layerName: null
+      layerName: null,
+      layerKey: null,
+      rules: [],
+
     }
     getPropertiesList = getPropertiesList.bind(this)
+    this.collectAddData = this.collectAddData.bind(this)
   }
     render(){
+
+        const layer_data_list = this.state.properties_list
+        var properties = ""
+        for (var i = 0; i < layer_data_list.length; i++) {
+         properties += "<option value='"+ layer_data_list[i][0] +"'>"+ layer_data_list[i][0] +"</option>"
+        }
+        $( "#propertySelect" ).append(properties);
+
+        const rule_list = this.state.rules
+        var ruleString = ""
+        for (var i = 0; i < rule_list.length; i++) {
+         ruleString += "<li>"+rule_list[i][0]+" "+rule_list[i][1]+" "+rule_list[i][2]+"</li>"
+        }
+        $( "#rule_list" ).empty();
+        $( "#rule_list" ).append(ruleString);
+
 
         return(
         <div className="Extract_window">
             <p>Extracting features from {this.state.layerName} </p>
             New Layer name: <input className="extract_name" type="text"/>
-            <button onClick={(param) => this.addRule(param)}>Add Rule</button>
+            <button onClick={(param) => this.toggleAddRulePanel(param)}>Add Rule</button>
             <button onClick={(param) => this.executeExtract(param)}>Extract</button>
             <button onClick={(param) => this.closeWindow(param)}>Close Window</button>
-            <div id="extract_feature_rules">
-
+            <div>
+              <ul id="rule_list">
+              </ul>
+            </div>
+            <div id="addRulePanel" hidden>
+              <select id="propertySelect">
+              </select>
+              <select id="symbolSelect">
+                <option value='=='>Equals</option>
+                <option value='!='>Not Equal to</option>
+                <option value='>'>Above</option>
+                <option value='<'>Below</option>
+                <option value='>='>Equals or above</option>
+                <option value='<='>Equals or below</option>
+              </select>
+              <input id="value_input" type="text"/>
+              <button onClick={(param) => this.collectAddData(param)}>Add</button>
             </div>
 
         </div>
@@ -36,32 +72,56 @@ class ExtractFeatureWindow extends Component{
         )
     }
 
+    componentDidUpdate(prevProps, prevState) {
+      if (this.state.rules !== prevState.rules ){
+      }
+    }
+
+    collectAddData(){
+      var value = document.getElementById('value_input').value
+      var property = document.getElementById('propertySelect').value
+      var symbol = document.getElementById('symbolSelect').value
+      var rule = [property, symbol, value]
+      $('#addRulePanel').hide();
+
+
+      this.setState(prevState => ({
+        rules: [...prevState.rules, rule]
+      }))
+
+
+    }
+
     closeWindow() {
       var extract_options = document.getElementById("extract_feature_window")
+      var layerName = null;
       $(extract_options).hide();
+      this.setState({ layerName })
+      $('#addRulePanel').hide();
+
+      // TODO Slett alle eksisterende "rules"
     }
 
-    addRule() {
-      const layer_data_list = this.state.properties_list
-
-      var properties = ""
-      for (var i = 0; i < layer_data_list.length; i++) {
-        properties += "<option value='"+ layer_data_list[i][0] +"'>"+ layer_data_list[i][0] +"</option>"
+    toggleAddRulePanel() {
+      var value = $('#addRulePanel').is(":visible");
+      if (value) {
+        $('#addRulePanel').hide();
+      } else {
+        $('#addRulePanel').show();
       }
-
-      var extract_rules = document.getElementById("extract_feature_rules")
-      var rule_html = "<div className='active_rule'><p>Select feature:</p><select className='properties_select'>"+properties+"</select></div><div><select><option value='=='>Equals</option><option value='!='>Not Equal to</option><option value='<'>Above</option><option value='>'>Below</option><option value='<='>Equals or above</option><option value='>='>Equals or below</option></select></div><div><input className='property_value' type='text'/></div>"
-
-      $(extract_rules).append(rule_html)
     }
-
 
     executeExtract() {
-      var $html = $('#extract_feature_rules')
+      const rule_list = this.state.rules
+      const layer_key = this.state.layerKey
 
-      console.log(sta);
+      // clears out the rule list.
+      $( "#rule_list" ).empty();
 
+      callExtract(layer_key, rule_list)
 
+      // Resets the rules.
+      this.setState({rules: []});
     }
 }
 

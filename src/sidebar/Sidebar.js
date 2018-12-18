@@ -170,6 +170,12 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
 
 }
 
+// Gets geojson file and rule set on which to run extract on.
+export function callExtract(geojson_file_key, rule_set) {
+  console.log(geojson_file_key)
+  console.log(rule_set)
+}
+
 // Getting the properties for selected GeoJSON file.
 export function getProperties(geojson_file_key) {
   // gets the data for the geojson file stored in memory.
@@ -201,7 +207,7 @@ export function getProperties(geojson_file_key) {
     property_data.push([properties[i], valuearray[i]])
   }
 
-  getPropertiesList(property_data, selected_layer_name)
+  getPropertiesList(property_data, selected_layer_name, geojson_file_key)
 }
 
 // Converts a geojson consisting with mulitple polygons into a geojson file with MultiPolygon geometry for difference function.

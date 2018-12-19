@@ -44,7 +44,7 @@ class ExtractFeatureWindow extends Component{
         return(
         <div className="Extract_window">
             <p>Extracting features from {this.state.layerName} </p>
-            New Layer name: <input className="extract_name" type="text"/>
+            New Layer name: <input id="extract_name" type="text"/>
             <button onClick={(param) => this.toggleAddRulePanel(param)}>Add Rule</button>
             <button onClick={(param) => this.executeExtract(param)}>Extract</button>
             <button onClick={(param) => this.closeWindow(param)}>Close Window</button>
@@ -114,11 +114,13 @@ class ExtractFeatureWindow extends Component{
     executeExtract() {
       const rule_list = this.state.rules
       const layer_key = this.state.layerKey
+      const new_name = document.getElementById('extract_name').value
+
 
       // clears out the rule list.
       $( "#rule_list" ).empty();
 
-      callExtract(layer_key, rule_list)
+      callExtract(new_name, layer_key, rule_list)
 
       // Resets the rules.
       this.setState({rules: []});

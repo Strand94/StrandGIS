@@ -35,6 +35,7 @@ export function callBuffer(buffer_radius, geojson_file_key) {
     var final_buffer = {"type":"FeatureCollection","features": [buffer_dissolved]};
   }
 
+
   const buffer_layer_key = generateKey()
   get_newgeojson(final_buffer, buffer_layer_key)
   createLayer(selected_layer_name+' '+buffer_radius+' m buffer', buffer_layer_key, final_buffer)
@@ -171,9 +172,72 @@ export function callDifference(geojson_file_key1, geojson_file_key2) {
 }
 
 // Gets geojson file and rule set on which to run extract on.
-export function callExtract(geojson_file_key, rule_set) {
-  console.log(geojson_file_key)
-  console.log(rule_set)
+export function callExtract(new_name, geojson_file_key, rule_set) {
+  // gets the data for the geojson file stored in memory.
+  var layer_position = find_called_geojson(geojson_file_key)
+  var selected_layer_geojson = collect_called_geojson(layer_position)
+
+  var features = []
+  // building a custom logical operator checker, since our operator is a variable.
+  var operators = {
+    '==': function(a, b) { return a == b },
+    '!=': function(a, b) { return a != b },
+    '<': function(a, b) { return a > b },
+    '>': function(a, b) { return a < b },
+    '<=': function(a, b) { return a >= b },
+    '>=': function(a, b) { return a <= b },
+  };
+
+  // for each layer, checking the first rule initially.
+  for (var j = 0; j < selected_layer_geojson.features.length; j++ ){
+    // for each feature in geojson layer
+    for (var property in selected_layer_geojson.features[j].properties){
+      // if the property is same as defined in rule:
+      if(property == rule_set[0][0]) {
+        // if property has a value we collect it, otherwise the rule is invalid
+        if(selected_layer_geojson.features[j].properties.hasOwnProperty(property)) {
+          var value = selected_layer_geojson.features[j].properties[property]
+          var properties = selected_layer_geojson.features[j].properties
+          var coordinates = selected_layer_geojson.features[j].geometry.coordinates[0]
+          // Running a check to see if value is okay for rule.
+          if (operators[rule_set[0][1]](rule_set[0][2],value)) {
+            var feature = {"type":"Feature","properties": properties,"geometry":{"type":"Polygon","coordinates": [coordinates] }}
+            features.push(feature)
+          }
+        }
+      }
+    }
+  }
+
+  // If there are more than one rule, we update the feature list by removing those not
+  if (rule_set.length > 1) {
+    // For each additional rule we need to check the accepted features from the first rule.
+    for (var i = 1; i <rule_set.length; i++ ){
+      var dummy_array = []
+      for (var j = 0; j < features.length; j++ ){
+        // for each feature in geojson layer
+        for (var property in features[j].properties){
+                  // if the property is same as defined in rule:
+          if(property == rule_set[i][0]) {
+              var value = features[j].properties[property]
+              var properties = features[j].properties
+              var coordinates = features[j].geometry.coordinates[0]
+              // Running a check to see if value is okay for rule.
+              if (operators[rule_set[i][1]](rule_set[i][2],value)) {
+                var feature = {"type": "Feature", "properties":properties,"geometry":{ "type": "Polygon", "coordinates": [coordinates] }}
+                console.log(feature)
+                dummy_array.push(feature)
+              }
+            }
+          }
+        }
+        features = dummy_array;
+      }
+    }
+    var new_geojson = {"type":"FeatureCollection","features": features };
+    const extract_key = generateKey()
+    get_newgeojson(new_geojson, extract_key)
+    createLayer(new_name, extract_key, new_geojson)
 }
 
 // Getting the properties for selected GeoJSON file.
@@ -251,6 +315,7 @@ export function geojsonMultiPolygonToPolygon(geojson) {
     }
   }
   var new_geojson = {"type":"FeatureCollection","features": new_features };
+  console.log(new_geojson)
   return new_geojson
 
 }

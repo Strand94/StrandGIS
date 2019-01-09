@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import {Map, TileLayer, Popup, GeoJSON, FeatureGroup, Circle} from 'react-leaflet';
 import './MainMap.css';
 import $ from "jquery";
@@ -85,8 +84,9 @@ class MainMap extends Component {
       geojsonLayer.setStyle({'className': 'map-path'}); //will add the required class
     }
     geojsonLayer.addTo(this.state.map);
-    this.state.map.fitBounds(geojsonLayer.getBounds())
-
+    if ('_northEast' in geojsonLayer.getBounds()){
+      this.state.map.fitBounds(geojsonLayer.getBounds())
+    }
     // store the Leaflet GeoJSON layer in our component state.
     this.setState({ geojsonLayer });
    }

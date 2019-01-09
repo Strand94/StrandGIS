@@ -110,6 +110,9 @@ export function callIntersect(geojson_file_key1, geojson_file_key2) {
   var f1 = selected_layer_geojson1.features
   var f2 = selected_layer_geojson2.features
 
+  console.log(f1)
+  console.log(f2)
+
 
   var conflictlist = [];
 
@@ -120,12 +123,18 @@ export function callIntersect(geojson_file_key1, geojson_file_key2) {
 
           var parcel2 = f2[j];
 
+            console.log(parcel1)
+            console.log(parcel2)
+
               var conflict = turf.intersect(parcel1, parcel2);
+              console.log(conflict)
               if (conflict != null) {
                   conflictlist.push(conflict);
               }
       }
   }
+  console.log("conflicts:")
+  console.log(conflictlist)
 
   var lg = new L.LayerGroup();
   var intersectLayer = {"type":"FeatureCollection","features": conflictlist};
@@ -234,10 +243,28 @@ export function callExtract(new_name, geojson_file_key, rule_set) {
         features = dummy_array;
       }
     }
+
     var new_geojson = {"type":"FeatureCollection","features": features };
+    var dissolveLayer = new_geojson.features[0]
+
+    for (var i = 1; i < new_geojson.features.length; i++) {
+      dissolveLayer = turf.union(dissolveLayer, new_geojson.features[i])
+    }
+
+    // Cleans the returned dissolve data.
+    if (dissolveLayer.geometry.type == 'MultiPolygon') {
+      var multipolygon = {"type":"FeatureCollection","features": [dissolveLayer]};
+      final_dissolve = geojsonMultiPolygonToPolygon(multipolygon)
+    } else {
+      var final_dissolve = {"type":"FeatureCollection","features": [dissolveLayer]};
+    }
+
+
+
+    console.log(final_dissolve)
     const extract_key = generateKey()
-    get_newgeojson(new_geojson, extract_key)
-    createLayer(new_name, extract_key, new_geojson)
+    //get_newgeojson(final_dissolve, extract_key)
+    createLayer(new_name, extract_key, final_dissolve)
 }
 
 // Getting the properties for selected GeoJSON file.
